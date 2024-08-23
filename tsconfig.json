@@ -1,0 +1,28 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "baseUrl": ".", // 设定根目录
+    "paths": {
+      "@stores/*": ["/src/stores/*"] // 映射路径
+    },
+    "target": "ESNext", // 设置编译目标为最新的 ECMAScript 标准
+    "module": "ESNext", // 使用 ES 模块系统
+    "jsx": "preserve", // 保留 JSX 语法，以便由 Vue 处理
+    "jsxFactory": "h", // JSX 工厂函数，Vue 3 使用 h 函数
+    "jsxFragmentFactory": "Fragment", // JSX 片段工厂，Vue 3 使用 Fragment
+    "moduleResolution": "node", // 模块解析策略为 Node.js 风格
+    "esModuleInterop": true, // 允许与 ES 模块的互操作性
+    "strict": true, // 启用所有严格类型检查选项
+    "skipLibCheck": true // 跳过库文件的类型检查
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"], // 包含的文件
+  "exclude": ["node_modules", "dist"] // 排除的文件或目录
+}

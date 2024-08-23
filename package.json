@@ -1,0 +1,45 @@
+{
+  "name": "genesis_test",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "product": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "ant-design-vue": "^4.2.3",
+    "axios": "^1.7.2",
+    "dayjs": "^1.11.11",
+    "element-plus": "^2.6.3",
+    "html-to-docx": "^1.8.0",
+    "less": "^4.2.0",
+    "mammoth": "^1.8.0",
+    "pinia": "^2.1.7",
+    "quill": "^2.0.2",
+    "quill-better-table": "^1.2.10",
+    "vite-plugin-node-stdlib-browser": "^0.2.1",
+    "vue": "^3.4.29",
+    "vue-request": "^2.0.4",
+    "vue-router": "^4.3.0",
+    "xmlbuilder2": "^3.1.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "@vitejs/plugin-vue-jsx": "^4.0.1",
+    "@vue/runtime-dom": "^3.4.38",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.4",
+    "terser": "^5.31.6",
+    "typescript": "^5.5.3",
+    "unplugin-auto-import": "^0.18.2",
+    "unplugin-vue-components": "^0.27.4",
+    "vite": "^5.3.1",
+    "vite-plugin-node-polyfills": "^0.22.0",
+    "vue-tsc": "^2.0.21"
+  }
+}
