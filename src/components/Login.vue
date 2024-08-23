@@ -33,7 +33,7 @@ const onSubmitFormData = async () => {
       ElMessage.error('登录失败')
     }
   } catch (error) {
-    console.log(error)
+    ElMessage.error('登录失败')
   }
 }
 
