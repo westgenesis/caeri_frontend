@@ -14,27 +14,30 @@
             </template>
         </a-table>
 
-        <a-modal title="新增用户" v-model:visible="createModalVisible" @ok="createUser" @cancel="handleCancel">
+        <a-modal title="新增用户" v-model:visible="createModalVisible" @ok="createUser" @cancel="handleCancel" okText="确定" cancelText="取消">
             <a-form :form="createForm">
                 <a-form-item label="用户名" name="name">
-                    <a-input v-model="createFormData.name" />
+                    <a-input v-model:value="createFormData.name" />
                 </a-form-item>
                 <a-form-item label="账号" name="account">
-                    <a-input v-model="createFormData.account" />
+                    <a-input v-model:value="createFormData.account" />
                 </a-form-item>
                 <a-form-item label="密码" name="password">
-                    <a-input type="password" v-model="createFormData.password" />
+                    <a-input type="password" v-model:value="createFormData.password" />
                 </a-form-item>
                 <a-form-item label="邮箱" name="email">
-                    <a-input v-model="createFormData.email" />
+                    <a-input v-model:value="createFormData.email" />
                 </a-form-item>
                 <a-form-item label="角色" name="user_role_id">
-                    <a-select v-model="createFormData.user_role_id" :options="rolesOptions" />
+                    <a-select v-model:value="createFormData.user_role_id" :options="rolesOptions" />
+                </a-form-item>
+                <a-form-item label="备注" name="comment">
+                    <a-input v-model:value="createFormData.comment" />
                 </a-form-item>
             </a-form>
         </a-modal>
 
-        <a-modal title="编辑用户" v-model:visible="editModalVisible" @ok="updateUser" @cancel="handleCancel">
+        <a-modal title="编辑用户" v-model:visible="editModalVisible" @ok="updateUser" @cancel="handleCancel" okText="确定" cancelText="取消">
             <a-form :form="editForm">
                 <a-form-item label="用户名" name="name">
                     <a-input v-model="editFormData.name" />
@@ -50,6 +53,9 @@
                 </a-form-item>
                 <a-form-item label="角色" name="user_role_id">
                     <a-select v-model="editFormData.user_role_id" :options="rolesOptions" />
+                </a-form-item>
+                <a-form-item label="备注" name="comment">
+                    <a-input v-model:value="editFormData.comment" />
                 </a-form-item>
             </a-form>
         </a-modal>
@@ -68,8 +74,8 @@ export default {
         const createModalVisible = ref(false);
         const editModalVisible = ref(false);
         const rolesOptions = ref([]);
-        const createFormData = reactive({ name: '', account: '', password: '', email: '', user_role_id: '' });
-        const editFormData = reactive({ user_id: '', name: '', account: '', password: '', email: '', user_role_id: '' });
+        const createFormData = reactive({ name: '', account: '', password: '', email: '', user_role_id: '', comment: ''});
+        const editFormData = reactive({ user_id: '', name: '', account: '', password: '', email: '', user_role_id: '', comment: ''});
 
         const columns = [
             { title: '用户序号', dataIndex: 'user_id' },
@@ -115,9 +121,35 @@ export default {
 
         const showCreateModal = () => {
             createModalVisible.value = true;
+            createFormData.name = '';
+            createFormData.account = '';
+            createFormData.password = '';
+            createFormData.email = '';
+            createFormData.user_role_id = '';
+            createFormData.comment = '';
         };
 
         const createUser = async () => {
+            if (!createFormData.name) {
+                ElMessage.error('请填写用户名');
+                return;
+            }
+            if (!createFormData.account) {
+                ElMessage.error('请填写账号');
+                return;
+            }
+            if (!createFormData.password) {
+                ElMessage.error('请填写密码');
+                return;
+            }
+            if (!createFormData.email) {
+                ElMessage.error('请填写邮箱');
+                return;
+            }
+            if (!createFormData.user_role_id) {
+                ElMessage.error('请选择角色');
+                return;
+            }
             await http.post('/test/v1/users/create_user', createFormData);
             createModalVisible.value = false;
             fetchUserList();
@@ -130,10 +162,31 @@ export default {
             editFormData.password = '';
             editFormData.email = record.email;
             editFormData.user_role_id = record.user_role_id;
+            editFormData.comment = record.comment;
             editModalVisible.value = true;
         };
 
         const updateUser = async () => {
+            if (!editFormData.name) {
+                ElMessage.error('请填写用户名');
+                return;
+            }
+            if (!editFormData.account) {
+                ElMessage.error('请填写账号');
+                return;
+            }
+            if (!editFormData.password) {
+                ElMessage.error('请填写密码');
+                return;
+            }
+            if (!editFormData.email) {
+                ElMessage.error('请填写邮箱');
+                return;
+            }
+            if (!editFormData.user_role_id) {
+                ElMessage.error('请选择角色');
+                return;
+            }
             await http.post('/test/v1/users/update_user', editFormData);
             editModalVisible.value = false;
             fetchUserList();
@@ -172,5 +225,5 @@ export default {
 </script>
 
 <style scoped>
-/* 这里加上你需要的样式 */
+
 </style>

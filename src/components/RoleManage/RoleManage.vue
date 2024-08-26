@@ -14,7 +14,7 @@
             </template>
         </a-table>
 
-        <a-modal title="新增角色" v-model:visible="createModalVisible" @ok="createRole" @cancel="handleCancel">
+        <a-modal title="新增角色" v-model:visible="createModalVisible" @ok="createRole" @cancel="handleCancel" okText="确定" cancelText="取消">
             <a-form :form="createForm">
                 <a-form-item label="角色名" name="name">
                     <a-input v-model:value="createFormData.name" />
@@ -26,7 +26,7 @@
             </a-form>
         </a-modal>
 
-        <a-modal title="编辑角色" v-model:visible="editModalVisible" @ok="updateRole" @cancel="handleCancel">
+        <a-modal title="编辑角色" v-model:visible="editModalVisible" @ok="updateRole" @cancel="handleCancel" okText="确定" cancelText="取消">
             <a-form :form="editForm">
                 <a-form-item label="角色名" name="name">
                     <a-input v-model="editFormData.name" />
@@ -126,6 +126,8 @@ export default {
 
         const showCreateModal = () => {
             createModalVisible.value = true;
+            createFormData.name = '';
+            createCheckedKeys.value = [];
         };
 
         const createRole = async () => {
