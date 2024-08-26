@@ -10,7 +10,7 @@
             <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'action'">
             <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
-            <a-button type="link" size="small" @click="deleteRole(record.role_id)">删除</a-button>
+            <a-button type="link" size="small" @click="deleteRole(record.role_name)">删除</a-button>
           </template>
         </template>
         </a-table>
@@ -172,8 +172,8 @@ export default {
             fetchRoleList();
         };
 
-        const deleteRole = async (role_id) => {
-            await http.post('/test/v1/users/delete_role', { role_id });
+        const deleteRole = async (role_name) => {
+            await http.post('/test/v1/users/delete_role', { name: role_name });
             fetchRoleList();
         };
 
