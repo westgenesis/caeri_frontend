@@ -41,6 +41,7 @@
 <script>
 import { ref, reactive, onMounted } from 'vue';
 import { http } from '../../http';
+import { ElMessage } from 'element-plus'
 
 export const menuPermissions = [
     {
@@ -89,12 +90,11 @@ export default {
         const expandedKeys = ref(menuPermissions.map(item => item.key));
 
         const columns = [
-            { title: '角色序号', dataIndex: 'index' },
-            { title: '角色名称', dataIndex: 'name' },
-            { title: '当前用户', dataIndex: 'current_users' },
-            { title: '角色状态', dataIndex: 'status' },
-            { title: '备注', dataIndex: 'remark' },
-            { title: '创建时间', dataIndex: 'created_at' },
+            { title: '角色ID', dataIndex: 'user_id' },
+            { title: '角色名称', dataIndex: 'user_name' },
+            { title: '角色状态', dataIndex: 'user_status' },
+            { title: '备注', dataIndex: 'comment' },
+            { title: '创建时间', dataIndex: 'created_time' },
             {
                 title: '操作',
                 key: 'action',
@@ -128,7 +128,18 @@ export default {
 
         const createRole = async () => {
             createFormData.permission = JSON.stringify(getSelectedPermissions(createCheckedKeys.value));
-            await http.post('/test/v1/users/create_role', createFormData);
+            http.post('/test/v1/users/create_role', createFormData).then((response) => {
+                console.log(response)
+                if (response.status === 'ok') {
+                    ElMessage.success('创建角色成功');
+                } else {
+                    ElMessage.error('创建角色失败');
+                }
+            }).catch(response => {
+                ElMessage.error('创建角色失败');
+            })
+            
+
             createModalVisible.value = false;
             fetchRoleList();
         };
