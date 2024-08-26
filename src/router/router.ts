@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import Registry from '../components/Registry.vue';
 import Home from '../components/Home/Home.vue';
+import RoleManage from '../components/RoleManage/RoleManage.vue';
 
 const routes = [
   {
@@ -25,6 +26,14 @@ const routes = [
     name: 'Home',
     meta: {
       breadcrumb: ['工作台']
+    }
+  },
+  {
+    path: '/roleManage',
+    component: RoleManage,
+    name: 'RoleManage',
+    meta: {
+      breadcrumb: ['系统管理', '角色管理']
     }
   }
 ];

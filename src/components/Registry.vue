@@ -46,7 +46,7 @@ const onSubmitFormData = async () => {
       </div>
       <div class="title-0 m-[16px] flex justify-center">
         <span class="title-welcome one-line-text max-w-[300px]">
-          现代化的测试和用例管理工具
+          汽车测试管理系统
         </span>
       </div>
     </div>

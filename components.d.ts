@@ -33,6 +33,7 @@ declare module 'vue' {
     Registry: typeof import('./src/components/Registry.vue')['default']
     RequirementDocx: typeof import('./src/components/Requirement/RequirementDocx.vue')['default']
     RequirementManage: typeof import('./src/components/Requirement/RequirementManage.vue')['default']
+    RoleManage: typeof import('./src/components/RoleManage/RoleManage.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScriptFile: typeof import('./src/components/Script/ScriptFile.vue')['default']

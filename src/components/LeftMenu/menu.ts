@@ -1,6 +1,5 @@
-const projectMenus = [
-
-]
+import { VueElement, h } from 'vue';
+import { MailOutlined, AppstoreOutlined, SettingOutlined, HomeOutlined} from '@ant-design/icons-vue';
 
 export function getItem(
     label: VueElement | string,
@@ -17,3 +16,5 @@ export function getItem(
       type,
     } as ItemType;
   }
+
+  
