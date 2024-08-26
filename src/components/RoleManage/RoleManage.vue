@@ -15,7 +15,7 @@
         <a-modal title="新增角色" v-model:visible="createModalVisible" @ok="createRole" @cancel="handleCancel">
             <a-form :form="createForm">
                 <a-form-item label="角色名" name="name">
-                    <a-input v-model="createFormData.name" />
+                    <a-input v-model:value="createFormData.name" />
                 </a-form-item>
                 <a-form-item label="权限" name="permission">
                     <a-tree checkable :treeData="menuPermissions" :defaultExpandedKeys="expandedKeys"
