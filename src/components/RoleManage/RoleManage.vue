@@ -118,7 +118,7 @@ export default {
         });
 
         const fetchRoleList = async () => {
-            const { data } = await http.post('/test/v1/roles/get_role_list', { name: searchText.value || undefined });
+            const { data } = await http.post('/test/v1/users/get_role_list', { name: searchText.value || undefined });
             roleList.value = data;
         };
 
@@ -128,7 +128,7 @@ export default {
 
         const createRole = async () => {
             createFormData.permission = JSON.stringify(getSelectedPermissions(createCheckedKeys.value));
-            await http.post('/test/v1/roles/create_role', createFormData);
+            await http.post('/test/v1/users/create_role', createFormData);
             createModalVisible.value = false;
             fetchRoleList();
         };
@@ -143,13 +143,13 @@ export default {
 
         const updateRole = async () => {
             editFormData.permission = JSON.stringify(getSelectedPermissions(editCheckedKeys.value));
-            await http.post('/test/v1/roles/update_role', editFormData);
+            await http.post('/test/v1/users/update_role', editFormData);
             editModalVisible.value = false;
             fetchRoleList();
         };
 
         const deleteRole = async (id) => {
-            await http.post('/test/v1/roles/delete_role', { id });
+            await http.post('/test/v1/users/delete_role', { id });
             fetchRoleList();
         };
 
