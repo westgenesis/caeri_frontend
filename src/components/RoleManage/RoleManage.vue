@@ -2,20 +2,23 @@
     <div style="margin: 20px;">
         <a-page-header title="角色管理" />
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <a-input-search v-model:value="searchText" placeholder="请输入角色名" style="width: 200px" @search="fetchRoleList" />
+            <a-input-search v-model:value="searchText" placeholder="请输入角色名" style="width: 200px"
+                @search="fetchRoleList" />
             <a-button type="primary" @click="showCreateModal"> 新增角色 </a-button>
         </div>
 
-        <a-table :columns="columns" :dataSource="roleList" :rowKey="record => record.role_id" pagination="paginationConfig">
+        <a-table :columns="columns" :dataSource="roleList" :rowKey="record => record.role_id"
+            pagination="paginationConfig">
             <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'action'">
-            <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
-            <a-button type="link" size="small" @click="deleteRole(record.role_name)">删除</a-button>
-          </template>
-        </template>
+                <template v-if="column.key === 'action'">
+                    <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
+                    <a-button type="link" size="small" @click="deleteRole(record.role_name)">删除</a-button>
+                </template>
+            </template>
         </a-table>
 
-        <a-modal title="新增角色" v-model:visible="createModalVisible" @ok="createRole" @cancel="handleCancel" okText="确定" cancelText="取消">
+        <a-modal title="新增角色" v-model:visible="createModalVisible" @ok="createRole" @cancel="handleCancel" okText="确定"
+            cancelText="取消">
             <a-form :form="createForm">
                 <a-form-item label="角色名" name="name">
                     <a-input v-model:value="createFormData.name" />
@@ -27,7 +30,8 @@
             </a-form>
         </a-modal>
 
-        <a-modal title="编辑角色" v-model:visible="editModalVisible" @ok="updateRole" @cancel="handleCancel" okText="确定" cancelText="取消">
+        <a-modal title="编辑角色" v-model:visible="editModalVisible" @ok="updateRole" @cancel="handleCancel" okText="确定"
+            cancelText="取消">
             <a-form :form="editForm">
                 <a-form-item label="角色名" name="name">
                     <a-input v-model:value="editFormData.name" />
@@ -44,7 +48,7 @@
 <script>
 import { ref, reactive, onMounted } from 'vue';
 import { http } from '../../http';
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 export const menuPermissions = [
     {
@@ -150,7 +154,7 @@ export default {
             }).catch(response => {
                 ElMessage.error('创建角色失败');
             })
-            
+
 
             createModalVisible.value = false;
             fetchRoleList();
@@ -173,8 +177,20 @@ export default {
         };
 
         const deleteRole = async (role_name) => {
-            await http.post('/test/v1/users/delete_role', { name: role_name });
-            fetchRoleList();
+            const confirmResult = await ElMessageBox.confirm(
+                '确定要删除该角色吗？',
+                '警告',
+                {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }
+            );
+
+            if (confirmResult) {
+                await http.post('/test/v1/users/delete_role', { name: role_name });
+                fetchRoleList();
+            }
         };
 
         const handleCancel = () => {

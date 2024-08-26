@@ -2,24 +2,27 @@
     <div style="margin: 20px;">
         <a-page-header title="用户管理" />
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <a-input-search v-model:value="searchText" placeholder="请输入用户名" style="width: 200px" @search="fetchUserList" />
+            <a-input-search v-model:value="searchText" placeholder="请输入用户名" style="width: 200px"
+                @search="fetchUserList" />
             <a-button type="primary" @click="showCreateModal"> 新增用户 </a-button>
         </div>
 
-        <a-table :columns="columns" :dataSource="userList" :rowKey="record => record.user_id" pagination="paginationConfig">
+        <a-table :columns="columns" :dataSource="userList" :rowKey="record => record.user_id"
+            pagination="paginationConfig">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'action'">
                     <a-button type="link" @click="showEditModal(record)">编辑</a-button>
                     <a-divider type="vertical" />
-                    <a-button type="link" @click="deleteUser(record.user_id)">删除</a-button>
+                    <a-button type="link" @click="deleteUser(record.user_name)">删除</a-button>
                 </template>
                 <template v-if="column.key === 'user_status'">
-                    <a-tag>{{  record.user_status ? '启用' : '禁用' }}</a-tag>
+                    <a-tag>{{ record.user_status ? '启用' : '禁用' }}</a-tag>
                 </template>
             </template>
         </a-table>
 
-        <a-modal title="新增用户" v-model:visible="createModalVisible" @ok="createUser" @cancel="handleCancel" okText="确定" cancelText="取消">
+        <a-modal title="新增用户" v-model:visible="createModalVisible" @ok="createUser" @cancel="handleCancel" okText="确定"
+            cancelText="取消">
             <a-form :form="createForm">
                 <a-form-item label="用户名" name="name">
                     <a-input v-model:value="createFormData.name" />
@@ -42,22 +45,23 @@
             </a-form>
         </a-modal>
 
-        <a-modal title="编辑用户" v-model:visible="editModalVisible" @ok="updateUser" @cancel="handleCancel" okText="确定" cancelText="取消">
+        <a-modal title="编辑用户" v-model:visible="editModalVisible" @ok="updateUser" @cancel="handleCancel" okText="确定"
+            cancelText="取消">
             <a-form :form="editForm">
                 <a-form-item label="用户名" name="name">
-                    <a-input  v-model:value="editFormData.name" />
+                    <a-input v-model:value="editFormData.name" />
                 </a-form-item>
                 <a-form-item label="账号" name="account">
-                    <a-input  v-model:value="editFormData.account" />
+                    <a-input v-model:value="editFormData.account" />
                 </a-form-item>
                 <a-form-item label="密码" name="passwd">
-                    <a-input  v-model:value="editFormData.passwd" />
+                    <a-input v-model:value="editFormData.passwd" />
                 </a-form-item>
                 <a-form-item label="邮箱" name="email">
-                    <a-input  v-model:value="editFormData.email" />
+                    <a-input v-model:value="editFormData.email" />
                 </a-form-item>
                 <a-form-item label="角色" name="user_role_id">
-                    <a-select  v-model:value="editFormData.user_role_id" :options="rolesOptions" />
+                    <a-select v-model:value="editFormData.user_role_id" :options="rolesOptions" />
                 </a-form-item>
                 <a-form-item label="备注" name="comment">
                     <a-input v-model:value="editFormData.comment" />
@@ -70,7 +74,7 @@
 <script>
 import { ref, reactive, onMounted } from 'vue';
 import { http } from '../../http';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 export default {
     setup() {
@@ -79,13 +83,13 @@ export default {
         const createModalVisible = ref(false);
         const editModalVisible = ref(false);
         const rolesOptions = ref([]);
-        const createFormData = reactive({ name: '', account: '', passwd: '', email: '', user_role_id: '', comment: ''});
-        const editFormData = reactive({ user_id: '', name: '', account: '', passwd: '', email: '', user_role_id: '', comment: ''});
+        const createFormData = reactive({ name: '', account: '', passwd: '', email: '', user_role_id: '', comment: '' });
+        const editFormData = reactive({ user_id: '', name: '', account: '', passwd: '', email: '', user_role_id: '', comment: '' });
 
         const columns = [
             { title: '用户序号', dataIndex: 'user_id' },
             { title: '用户名', dataIndex: 'user_name' },
-            { title: '账号状态', dataIndex: 'user_status', key: 'user_status'},
+            { title: '账号状态', dataIndex: 'user_status', key: 'user_status' },
             { title: '备注', dataIndex: 'comment' },
             { title: '创建时间', dataIndex: 'created_time' },
             {
@@ -196,9 +200,21 @@ export default {
             fetchUserList();
         };
 
-        const deleteUser = async (user_id) => {
-            await http.post('/test/v1/users/delete_user', { user_id });
-            fetchUserList();
+        const deleteUser = async (user_name) => {
+            const confirmResult = await ElMessageBox.confirm(
+                '确定要删除该用户吗？',
+                '警告',
+                {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }
+            );
+
+            if (confirmResult) {
+                await http.post('/test/v1/users/delete_user', { name: user_name });
+                fetchUserList();
+            }
         };
 
         const handleCancel = () => {
@@ -228,6 +244,4 @@ export default {
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
