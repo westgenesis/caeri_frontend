@@ -39,5 +39,6 @@ declare module 'vue' {
     ScriptFile: typeof import('./src/components/Script/ScriptFile.vue')['default']
     TopBar: typeof import('./src/components/TopBar/TopBar.vue')['default']
     UseCase: typeof import('./src/components/UseCase/UseCase.vue')['default']
+    UserManage: typeof import('./src/components/UserManage/UserManage.vue')['default']
   }
 }

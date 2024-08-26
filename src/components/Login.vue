@@ -61,7 +61,7 @@ onMounted(() => {
 
           <div class="title-0 m-[16px] flex justify-center">
             <span class="title-welcome one-line-text max-w-[300px]">
-              信息安全测试系统
+              汽车信息安全测试系统
             </span>
           </div>
         </div>

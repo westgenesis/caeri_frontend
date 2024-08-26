@@ -1,14 +1,16 @@
 <template>
-    <div>
+    <div style="margin: 20px;">
         <a-page-header title="角色管理" />
-        <a-input-search v-model="searchText" placeholder="请输入角色名" style="width: 200px" @search="fetchRoleList" />
-        <a-button type="primary" @click="showCreateModal"> 新增角色 </a-button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <a-input-search v-model="searchText" placeholder="请输入角色名" style="width: 200px" @search="fetchRoleList" />
+            <a-button type="primary" @click="showCreateModal"> 新增角色 </a-button>
+        </div>
 
-        <a-table :columns="columns" :dataSource="roleList" :rowKey="record => record.id" pagination="paginationConfig">
+        <a-table :columns="columns" :dataSource="roleList" :rowKey="record => record.role_id" pagination="paginationConfig">
             <template #action="{ text, record }">
                 <a @click="showEditModal(record)">编辑</a>
                 <a-divider type="vertical" />
-                <a @click="deleteRole(record.id)" style="color: red;">删除</a>
+                <a @click="deleteRole(record.role_id)" style="color: red;">删除</a>
             </template>
         </a-table>
 
@@ -84,15 +86,15 @@ export default {
         const createModalVisible = ref(false);
         const editModalVisible = ref(false);
         const createFormData = reactive({ name: '', permission: '' });
-        const editFormData = reactive({ id: '', name: '', permission: '' });
+        const editFormData = reactive({ role_id: '', name: '', permission: '' });
         const createCheckedKeys = ref([]);
         const editCheckedKeys = ref([]);
         const expandedKeys = ref(menuPermissions.map(item => item.key));
 
         const columns = [
-            { title: '角色ID', dataIndex: 'user_id' },
-            { title: '角色名称', dataIndex: 'user_name' },
-            { title: '角色状态', dataIndex: 'user_status' },
+            { title: '角色ID', dataIndex: 'role_id' },
+            { title: '角色名称', dataIndex: 'role_name' },
+            { title: '角色状态', dataIndex: 'role_status' },
             { title: '备注', dataIndex: 'comment' },
             { title: '创建时间', dataIndex: 'created_time' },
             {
@@ -127,6 +129,10 @@ export default {
         };
 
         const createRole = async () => {
+            if (!createFormData.name) {
+                ElMessage.error('请输入角色名称');
+                return;
+            }
             createFormData.permission = JSON.stringify(getSelectedPermissions(createCheckedKeys.value));
             http.post('/test/v1/users/create_role', createFormData).then((response) => {
                 console.log(response)
@@ -145,7 +151,7 @@ export default {
         };
 
         const showEditModal = (record) => {
-            editFormData.id = record.id;
+            editFormData.role_id = record.role_id;
             editFormData.name = record.name;
             editFormData.permission = record.permission;
             editCheckedKeys.value = JSON.parse(record.permission).map(item => item.key);
@@ -159,8 +165,8 @@ export default {
             fetchRoleList();
         };
 
-        const deleteRole = async (id) => {
-            await http.post('/test/v1/users/delete_role', { id });
+        const deleteRole = async (role_id) => {
+            await http.post('/test/v1/users/delete_role', { role_id });
             fetchRoleList();
         };
 

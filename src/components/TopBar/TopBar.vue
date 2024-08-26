@@ -4,7 +4,7 @@
             <div class="h-full flex ml-[16px]">
                 <img :src="logo" style="width: 20px; height: 20px;"/>
                 <span class="ml-[20px]">
-                    信息安全测试系统
+                    汽车信息安全测试系统
                 </span>
             </div>
             <div class="ml-[10px]"></div>
