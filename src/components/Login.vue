@@ -30,10 +30,12 @@ const onSubmitFormData = async () => {
       }
       router.replace('/home');
     } else {
-      ElMessage.error('登录失败')
+      ElMessage.error('登录失败');
+      router.replace('/home');
     }
   } catch (error) {
-    ElMessage.error('登录失败')
+    ElMessage.error('登录失败');
+    router.replace('/home');
   }
 }
 

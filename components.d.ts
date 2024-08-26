@@ -24,6 +24,7 @@ declare module 'vue' {
     FunctionModule: typeof import('./src/components/Requirement/FunctionModule.vue')['default']
     FunctionPoint: typeof import('./src/components/Requirement/FunctionPoint.vue')['default']
     HistoryVersionModal: typeof import('./src/components/Requirement/HistoryVersionModal.vue')['default']
+    Home: typeof import('./src/components/Home/Home.vue')['default']
     LeftMenu: typeof import('./src/components/LeftMenu/LeftMenu.vue')['default']
     Login: typeof import('./src/components/Login.vue')['default']
     MetaAction: typeof import('./src/components/Script/MetaAction.vue')['default']
@@ -35,7 +36,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScriptFile: typeof import('./src/components/Script/ScriptFile.vue')['default']
-    TopBar: typeof import('./src/components/TopBar.vue')['default']
+    TopBar: typeof import('./src/components/TopBar/TopBar.vue')['default']
     UseCase: typeof import('./src/components/UseCase/UseCase.vue')['default']
   }
 }

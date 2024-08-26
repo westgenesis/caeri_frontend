@@ -1,11 +1,16 @@
 <script setup lang="ts">
-
+import LeftMenu from './components/LeftMenu/LeftMenu.vue';
+import TopBar from './components/TopBar/TopBar.vue';
 </script>
 
 <template>
   <div class="main">
+    <TopBar></TopBar>
     <div class="flex flex-1" style="overflow: hidden;">
+
+        <LeftMenu></LeftMenu>
         <div class="flex-1" style="background-color: #fff; overflow: hidden;" >
+
           <router-view></router-view>
         </div>
     </div>

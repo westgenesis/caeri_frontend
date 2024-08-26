@@ -2,6 +2,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import Registry from '../components/Registry.vue';
+import Home from '../components/Home/Home.vue';
 
 const routes = [
   {
@@ -17,6 +18,14 @@ const routes = [
   {
     path: '/',
     redirect: '/login',
+  },
+  {
+    path: '/home',
+    component: Home,
+    name: 'Home',
+    meta: {
+      breadcrumb: ['工作台']
+    }
   }
 ];
 
