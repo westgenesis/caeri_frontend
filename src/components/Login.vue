@@ -12,30 +12,31 @@ const rememberMe = ref(true);
 
 const onSubmitFormData = async () => {
   const formData = {
+    
     account: account.value,
     password: password.value,
-    remember_me: rememberMe.value,
+    usertype: account.value === 'admin' ? 'admin' : 'user',
   }
   try {
     const res: any = await http.post('/test/v1/login', formData)
-    if (res.status === 'success') {
+    console.log(res);
+    if (res.status === 'ok') {
       window.localStorage.setItem('account', formData.account)
       if (formData.remember_me) {
         window.localStorage.setItem('password', formData.password)
       } else {
         window.localStorage.removeItem('password')
       }
+      window.localStorage.setItem('account', account.value)
       if (res?.access_token) {
         window.localStorage.setItem('token', res?.access_token);
       }
       router.replace('/home');
     } else {
       ElMessage.error('登录失败');
-      router.replace('/home');
     }
   } catch (error) {
     ElMessage.error('登录失败');
-    router.replace('/home');
   }
 }
 

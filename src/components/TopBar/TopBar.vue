@@ -11,7 +11,7 @@
         </div>
         <a-dropdown>
             <div class="right mr-[16px] min-w-[150px]  cursor-pointer">
-                <UserOutlined class="ml-[10px]"/>{{ "游客" }}
+                <UserOutlined class="ml-[10px]"/>{{ currentAccount }}
             </div>
             <template #overlay>
                 <a-menu>
@@ -35,8 +35,7 @@ import { UserOutlined } from '@ant-design/icons-vue'
 
 const route = useRoute();
 const router = useRouter();
-const selectedProject = ref('');
-
+const currentAccount = ref(localStorage.getItem('account'));
 const isLoginOrRegistry = computed(() => {
     return route.path === '/login' || route.path === '/registry'
 })
@@ -44,6 +43,10 @@ const isLoginOrRegistry = computed(() => {
 const backToLogin = () => {
     router.push('/login');
 }
+
+watch(route, () => {
+    currentAccount.value = localStorage.getItem('account');
+});
 
 </script>
 

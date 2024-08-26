@@ -2,7 +2,7 @@
     <div style="margin: 20px;">
         <a-page-header title="角色管理" />
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <a-input-search v-model="searchText" placeholder="请输入角色名" style="width: 200px" @search="fetchRoleList" />
+            <a-input-search v-model:value="searchText" placeholder="请输入角色名" style="width: 200px" @search="fetchRoleList" />
             <a-button type="primary" @click="showCreateModal"> 新增角色 </a-button>
         </div>
 
