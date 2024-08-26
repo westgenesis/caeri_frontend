@@ -7,11 +7,12 @@
         </div>
 
         <a-table :columns="columns" :dataSource="roleList" :rowKey="record => record.role_id" pagination="paginationConfig">
-            <template #action="{ text, record }">
-                <a @click="showEditModal(record)">编辑</a>
-                <a-divider type="vertical" />
-                <a @click="deleteRole(record.role_id)" style="color: red;">删除</a>
-            </template>
+            <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'action'">
+            <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
+            <a-button type="link" size="small" @click="deleteRole(record.role_id)">删除</a-button>
+          </template>
+        </template>
         </a-table>
 
         <a-modal title="新增角色" v-model:visible="createModalVisible" @ok="createRole" @cancel="handleCancel" okText="确定" cancelText="取消">
@@ -29,7 +30,7 @@
         <a-modal title="编辑角色" v-model:visible="editModalVisible" @ok="updateRole" @cancel="handleCancel" okText="确定" cancelText="取消">
             <a-form :form="editForm">
                 <a-form-item label="角色名" name="name">
-                    <a-input v-model="editFormData.name" />
+                    <a-input v-model:value="editFormData.name" />
                 </a-form-item>
                 <a-form-item label="权限" name="permission">
                     <a-tree checkable :treeData="menuPermissions" :defaultExpandedKeys="expandedKeys"
@@ -121,6 +122,9 @@ export default {
 
         const fetchRoleList = async () => {
             const { data } = await http.post('/test/v1/users/get_role_list', { name: searchText.value || undefined });
+            console.log(data)
+            data.map(x => x.permission = x.role_limit)
+            data.map(x => x.name = x.role_name)
             roleList.value = data;
         };
 
@@ -156,6 +160,7 @@ export default {
             editFormData.role_id = record.role_id;
             editFormData.name = record.name;
             editFormData.permission = record.permission;
+            console.log(record)
             editCheckedKeys.value = JSON.parse(record.permission).map(item => item.key);
             editModalVisible.value = true;
         };
