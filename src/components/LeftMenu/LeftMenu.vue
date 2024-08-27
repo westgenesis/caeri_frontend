@@ -10,7 +10,7 @@ import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, h } from 'vue';
 import type { MenuProps, ItemType } from 'ant-design-vue';
-import { HomeOutlined, SettingOutlined } from '@ant-design/icons-vue';
+import { HomeOutlined, SettingOutlined, SnippetsOutlined} from '@ant-design/icons-vue';
 import { getItem } from './menu.ts';
 import { http } from '../../http'
 
@@ -37,6 +37,9 @@ const items: ItemType[] = [
     getItem('用户组织', '/groupManage'),
     getItem('客户信息管理', '/customerManage'),
   ]),
+  getItem('标签管理', '/labelManage', () => h(SnippetsOutlined), [
+    getItem('标签库', '/labelManage'),
+  ])
 ];
 
 const filteredItems = ref([...items]);  // 使用深拷贝来初始化

@@ -26,6 +26,7 @@ declare module 'vue' {
     GroupManage: typeof import('./src/components/GroupManage/GroupManage.vue')['default']
     HistoryVersionModal: typeof import('./src/components/Requirement/HistoryVersionModal.vue')['default']
     Home: typeof import('./src/components/Home/Home.vue')['default']
+    LabelManage: typeof import('./src/components/LabelManage/LabelManage.vue')['default']
     LeftMenu: typeof import('./src/components/LeftMenu/LeftMenu.vue')['default']
     Login: typeof import('./src/components/Login.vue')['default']
     MetaAction: typeof import('./src/components/Script/MetaAction.vue')['default']

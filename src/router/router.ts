@@ -6,6 +6,7 @@ import Home from '../components/Home/Home.vue';
 import RoleManage from '../components/RoleManage/RoleManage.vue';
 import UserManage from '../components/UserManage/UserManage.vue';
 import GroupManage from '../components/GroupManage/GroupManage.vue';
+import LabelManage from '../components/LabelManage/LabelManage.vue';
 
 const routes = [
   {
@@ -52,6 +53,14 @@ const routes = [
     name: 'GroupManage',
     meta: {
       breadcrumb: ['系统管理', '组织管理']
+    }
+  },
+  {
+    path: '/labelManage',
+    component: LabelManage,
+    name: 'LabelManage',
+    meta: {
+      breadcrumb: ['标签管理', '标签库']
     }
   }
 ];
