@@ -10,6 +10,9 @@
         <a-table :columns="columns" :dataSource="roleList" :rowKey="record => record.role_id"
             pagination="paginationConfig">
             <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'role_status'">
+                    <a-tag>{{ record.role_status ? '启用' : '禁用' }}</a-tag>
+                </template>
                 <template v-if="column.key === 'action'">
                     <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
                     <a-button type="link" size="small" @click="deleteRole(record.role_name)">删除</a-button>
@@ -72,7 +75,7 @@ export const menuPermissions = [
             },
             {
                 title: '用户组织',
-                key: '/userOrganization',
+                key: '/groupManage',
                 children: [],
             },
             {
@@ -99,7 +102,7 @@ export default {
         const columns = [
             { title: '角色ID', dataIndex: 'role_id' },
             { title: '角色名称', dataIndex: 'role_name' },
-            { title: '角色状态', dataIndex: 'role_status' },
+            { title: '角色状态', dataIndex: 'role_status', key: 'role_status' },
             { title: '备注', dataIndex: 'comment' },
             { title: '创建时间', dataIndex: 'created_time' },
             {
@@ -164,7 +167,6 @@ export default {
             editFormData.role_id = record.role_id;
             editFormData.name = record.name;
             editFormData.permission = record.permission;
-            console.log(record)
             editCheckedKeys.value = JSON.parse(record.permission).map(item => item.key);
             editModalVisible.value = true;
         };

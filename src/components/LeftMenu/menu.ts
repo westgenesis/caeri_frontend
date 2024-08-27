@@ -1,5 +1,5 @@
-import { VueElement, h } from 'vue';
-import { MailOutlined, AppstoreOutlined, SettingOutlined, HomeOutlined} from '@ant-design/icons-vue';
+import { VueElement } from 'vue';
+
 
 export function getItem(
     label: VueElement | string,

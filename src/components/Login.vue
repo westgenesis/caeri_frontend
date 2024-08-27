@@ -31,6 +31,9 @@ const onSubmitFormData = async () => {
       if (res?.access_token) {
         window.localStorage.setItem('token', res?.access_token);
       }
+      if (res?.user) {
+        window.localStorage.setItem('user_role_id', res?.user.user_role_id)
+      }
       router.replace('/home');
     } else {
       ElMessage.error('登录失败');
