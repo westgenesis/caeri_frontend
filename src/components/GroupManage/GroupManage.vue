@@ -156,7 +156,10 @@
       };
   
       const showEditModal = (record) => {
-        Object.assign(editFormData, record);
+        editFormData.group_id = record.group_id;
+        editFormData.name = record.group_name;
+        editFormData.parent_group_id = record.parent_group_id;
+        editFormData.users = record.users;
         editModalVisible.value = true;
       };
   
