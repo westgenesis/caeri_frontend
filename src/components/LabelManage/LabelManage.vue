@@ -2,7 +2,7 @@
     <div style="margin: 20px;">
         <a-page-header title="标签管理" />
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-            <div style="width: 15rem;">
+            <div style="width: 15rem; border-right: 1px #f4f4f4 solid;" >
                 <!-- 标签组管理 -->
                 <div>标签分组</div>
                 <a-menu mode="inline" v-model:selectedKeys="selectedLabelGroup">
@@ -34,7 +34,7 @@
                 </div>
 
                 <a-table :columns="columns" :dataSource="pagedLabelList" :rowKey="record => record.label_id"
-                    :pagination="paginationConfig" style="margin-top: 20px;">
+                    :pagination="paginationConfig" style="margin-top: 20px;" :scroll="{ y: table_height}">
                     <template #bodyCell="{ column, record }">
                         <template v-if="column.key === 'label_name'">
                             {{ record.label_name }}
@@ -204,6 +204,7 @@ const searchText = ref('');
 const labelList = ref([]);
 const labelGroupList = ref([]);
 const selectedLabelGroup = ref([]);
+const table_height = window.innerHeight * 0.5
 
 watch(selectedLabelGroup, (newVal) => {
     fetchLabelList();
@@ -374,7 +375,7 @@ onMounted(() => {
 <style scoped>
 .label-group-name {
     display: inline-block;
-    max-width: calc(100% - 7rem);
+    max-width: calc(100% - 5rem);
     /* 根据需要调整宽度 */
     white-space: nowrap;
     overflow: hidden;
