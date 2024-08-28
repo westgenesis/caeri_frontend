@@ -156,11 +156,13 @@ export default {
                 }
             }).catch(response => {
                 ElMessage.error('创建角色失败');
+            }).finally(() => {
+                createModalVisible.value = false;
+                fetchRoleList();
             })
 
 
-            createModalVisible.value = false;
-            fetchRoleList();
+
         };
 
         const showEditModal = (record) => {

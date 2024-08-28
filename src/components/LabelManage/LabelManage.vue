@@ -18,9 +18,6 @@
                                 </a-button>
                             </div>
                         </div>
-
-                        <!-- 替换文字按钮为图标按钮 -->
-
                     </a-menu-item>
                 </a-menu>
                 <a-button type="dashed" @click="showCreateLabelGroupModal" style="width: 100%; margin-top: 10px;"> 新增分组
@@ -42,14 +39,13 @@
                         <template v-if="column.key === 'label_group_name'">
                             {{ record.label_group_name }}
                         </template>
-                        <template v-if="column.key === 'range'">
-                            {{ record.range === 'all' ? '全部可见' : '仅自己' }}
+                        <template v-if="column.key === 'visual_range'">
+                            {{ record.visual_range === 'all' ? '全部可见' : '仅自己' }}
                         </template>
                         <template v-if="column.key === 'creator'">
                             <div style="width: 100px;">
                                 {{ record.creator }}
                             </div>
-
                         </template>
                         <template v-if="column.key === 'created_time'">
                             {{ record.created_time }}
@@ -108,8 +104,8 @@
                         </a-radio>
                     </a-radio-group>
                 </a-form-item>
-                <a-form-item label="可见范围" name="range">
-                    <a-select v-model:value="createFormData.range" allow-clear>
+                <a-form-item label="可见范围" name="visual_range">
+                    <a-select v-model:value="createFormData.visual_range" allow-clear>
                         <a-select-option value="self">仅自己</a-select-option>
                         <a-select-option value="all">全部可见</a-select-option>
                     </a-select>
@@ -162,8 +158,8 @@
                         </a-radio>
                     </a-radio-group>
                 </a-form-item>
-                <a-form-item label="可见范围" name="range">
-                    <a-select v-model:value="editFormData.range" allow-clear>
+                <a-form-item label="可见范围" name="visual_range">
+                    <a-select v-model:value="editFormData.visual_range" allow-clear>
                         <a-select-option value="self">仅自己</a-select-option>
                         <a-select-option value="all">全部可见</a-select-option>
                     </a-select>
@@ -213,15 +209,15 @@ const createModalVisible = ref(false);
 const editModalVisible = ref(false);
 const createLabelGroupModalVisible = ref(false);
 const editLabelGroupModalVisible = ref(false);
-const createFormData = reactive({ label_name: '', label_group_id: null, color: '#f5222d', range: 'self' });
-const editFormData = reactive({ label_id: '', label_name: '', label_group_id: null, color: '#f5222d', range: 'self' });
+const createFormData = reactive({ label_name: '', label_group_id: null, color: '#f5222d', visual_range: 'self' });
+const editFormData = reactive({ label_id: '', label_name: '', label_group_id: null, color: '#f5222d', visual_range: 'self' });
 const createLabelGroupFormData = reactive({ label_group_name: '' });
 const editLabelGroupFormData = reactive({ label_group_name: '', label_group_id: '' });
 
 const columns = [
     { title: '标签名称', dataIndex: 'label_name', key: 'label_name' },
     { title: '标签分组', dataIndex: 'label_group_name', key: 'label_group_name' },
-    { title: '可见范围', dataIndex: 'range', key: 'range' },
+    { title: '可见范围', dataIndex: 'visual_range', key: 'visual_range' },
     { title: '创建人', dataIndex: 'creator', key: 'creator', width: '90'},
     { title: '创建时间', dataIndex: 'created_time', key: 'created_time' },
     {
@@ -264,6 +260,7 @@ const createLabel = async () => {
         ElMessage.error('请选择标签组');
         return;
     }
+    createFormData.range = createFormData.visual_range;
     await http.post('/test/v1/labels/create_label', createFormData);
     createModalVisible.value = false;
     fetchLabelList();
@@ -271,7 +268,7 @@ const createLabel = async () => {
 
 const showCreateModal = () => {
     createModalVisible.value = true;
-    Object.assign(createFormData, { name: '', label_group_id: null, color: '#f5222d', range: 'self' });
+    Object.assign(createFormData, { name: '', label_group_id: null, color: '#f5222d', visual_range: 'self' });
 };
 
 const showEditModal = (record) => {
@@ -279,7 +276,7 @@ const showEditModal = (record) => {
     editFormData.label_name = record.label_name;
     editFormData.label_group_id = record.label_group_id;
     editFormData.color = record.color;
-    editFormData.range = record.range;
+    editFormData.visual_range = record.visual_range;
     editModalVisible.value = true;
 };
 
@@ -289,9 +286,13 @@ const updateLabel = async () => {
         return;
     }
     if (!editFormData.label_group_id) {
+        ElMessage.error('请选择标签')
+    }
+    if (!editFormData.label_group_id) {
         ElMessage.error('请选择标签组');
         return;
     }
+    editFormData.range = editFormData.visual_range;
     await http.post('/test/v1/labels/update_label', editFormData);
     editModalVisible.value = false;
     fetchLabelList();
