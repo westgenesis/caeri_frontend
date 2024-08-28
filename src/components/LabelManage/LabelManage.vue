@@ -2,19 +2,25 @@
     <div style="margin: 20px;">
         <a-page-header title="标签管理" />
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-            <div style="width: 200px;">
+            <div style="width: 15rem;">
                 <!-- 标签组管理 -->
-                 <div>标签分组</div>
-                <a-menu mode="inline" v-model:selectedKeys="selectedLabelGroup" @click="fetchLabelList">
+                <div>标签分组</div>
+                <a-menu mode="inline" v-model:selectedKeys="selectedLabelGroup">
                     <a-menu-item v-for="group in labelGroupList" :key="group.label_group_id">
-                        <span>{{ group.label_group_name }}</span>
+                        <div class="flex" style="justify-content: space-between;">
+                            <span class="label-group-name">{{ group.label_group_name }}</span>
+                            <div>
+                                <a-button type="link" @click.stop="showEditLabelGroupModal(group)" class="ml-[16px]">
+                                    <EditOutlined />
+                                </a-button>
+                                <a-button type="link" @click.stop="deleteLabelGroup(group.label_group_id)">
+                                    <DeleteOutlined />
+                                </a-button>
+                            </div>
+                        </div>
+
                         <!-- 替换文字按钮为图标按钮 -->
-                        <a-button type="link" @click.stop="showEditLabelGroupModal(group)" class="ml-[16px]">
-                            <EditOutlined />
-                        </a-button>
-                        <a-button type="link" @click.stop="deleteLabelGroup(group.label_group_id)">
-                            <DeleteOutlined />
-                        </a-button>
+
                     </a-menu-item>
                 </a-menu>
                 <a-button type="dashed" @click="showCreateLabelGroupModal" style="width: 100%; margin-top: 10px;"> 新增分组
@@ -40,7 +46,10 @@
                             {{ record.range === 'all' ? '全部可见' : '仅自己' }}
                         </template>
                         <template v-if="column.key === 'creator'">
-                            {{ record.creator }}
+                            <div style="width: 100px;">
+                                {{ record.creator }}
+                            </div>
+
                         </template>
                         <template v-if="column.key === 'created_time'">
                             {{ record.created_time }}
@@ -58,8 +67,8 @@
         <a-modal title="新增标签" v-model:visible="createModalVisible" @ok="createLabel" @cancel="handleCancel" okText="确定"
             cancelText="取消">
             <a-form :form="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
-                <a-form-item label="标签名称" name="name">
-                    <a-input v-model:value="createFormData.name" />
+                <a-form-item label="标签名称" name="label_name">
+                    <a-input v-model:value="createFormData.label_name" />
                 </a-form-item>
                 <a-form-item label="标签组" name="label_group_id">
                     <a-select v-model:value="createFormData.label_group_id" allow-clear>
@@ -112,8 +121,8 @@
         <a-modal title="编辑标签" v-model:visible="editModalVisible" @ok="updateLabel" @cancel="handleCancel" okText="确定"
             cancelText="取消">
             <a-form :form="editForm">
-                <a-form-item label="标签名称" name="name">
-                    <a-input v-model:value="editFormData.name" />
+                <a-form-item label="标签名称" name="label_name">
+                    <a-input v-model:value="editFormData.label_name" />
                 </a-form-item>
                 <a-form-item label="标签组" name="label_group_id">
                     <a-select v-model:value="editFormData.label_group_id" allow-clear>
@@ -186,7 +195,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted, computed, watch } from 'vue';
 import { http } from '../../http';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
@@ -195,12 +204,16 @@ const searchText = ref('');
 const labelList = ref([]);
 const labelGroupList = ref([]);
 const selectedLabelGroup = ref([]);
+
+watch(selectedLabelGroup, (newVal) => {
+    fetchLabelList();
+});
 const createModalVisible = ref(false);
 const editModalVisible = ref(false);
 const createLabelGroupModalVisible = ref(false);
 const editLabelGroupModalVisible = ref(false);
-const createFormData = reactive({ name: '', label_group_id: null, color: '#f5222d', range: 'self' });
-const editFormData = reactive({ label_id: '', name: '', label_group_id: null, color: '#f5222d', range: 'self' });
+const createFormData = reactive({ label_name: '', label_group_id: null, color: '#f5222d', range: 'self' });
+const editFormData = reactive({ label_id: '', label_name: '', label_group_id: null, color: '#f5222d', range: 'self' });
 const createLabelGroupFormData = reactive({ label_group_name: '' });
 const editLabelGroupFormData = reactive({ label_group_name: '', label_group_id: '' });
 
@@ -208,7 +221,7 @@ const columns = [
     { title: '标签名称', dataIndex: 'label_name', key: 'label_name' },
     { title: '标签分组', dataIndex: 'label_group_name', key: 'label_group_name' },
     { title: '可见范围', dataIndex: 'range', key: 'range' },
-    { title: '创建人', dataIndex: 'creator', key: 'creator' },
+    { title: '创建人', dataIndex: 'creator', key: 'creator', width: '90'},
     { title: '创建时间', dataIndex: 'created_time', key: 'created_time' },
     {
         title: '操作',
@@ -230,7 +243,6 @@ const paginationConfig = reactive({
 });
 
 const fetchLabelList = async () => {
-    console.log(selectedLabelGroup)
     const labelGroupId = selectedLabelGroup.value.length ? selectedLabelGroup.value[0] : null;
     const { data } = await http.post('/test/v1/labels/get_label_list', { label_group_id: labelGroupId, label_name: searchText.value || undefined });
     labelList.value = data;
@@ -243,7 +255,7 @@ const fetchLabelGroupList = async () => {
 };
 
 const createLabel = async () => {
-    if (!createFormData.name) {
+    if (!createFormData.label_name) {
         ElMessage.error('请填写标签名称');
         return;
     }
@@ -263,7 +275,7 @@ const showCreateModal = () => {
 
 const showEditModal = (record) => {
     editFormData.label_id = record.label_id;
-    editFormData.name = record.label_name;
+    editFormData.label_name = record.label_name;
     editFormData.label_group_id = record.label_group_id;
     editFormData.color = record.color;
     editFormData.range = record.range;
@@ -271,7 +283,7 @@ const showEditModal = (record) => {
 };
 
 const updateLabel = async () => {
-    if (!editFormData.name) {
+    if (!editFormData.label_name) {
         ElMessage.error('请填写标签名称');
         return;
     }
@@ -359,4 +371,14 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.label-group-name {
+    display: inline-block;
+    max-width: calc(100% - 7rem);
+    /* 根据需要调整宽度 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+</style>
