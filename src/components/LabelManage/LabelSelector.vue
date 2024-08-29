@@ -1,7 +1,7 @@
 <template>
   <a-form-item label="标签">
     <div @click="showModal">
-      <a-tag v-for="label in selectedLabels" :key="label.label_id" closable @close="removeLabel(label)">
+      <a-tag v-for="label in selectedLabels" :key="label.label_id" closable @close="removeLabel(label)" :color="label.color">
         {{ label.label_name }}
       </a-tag>
       <a-button type="dashed" style="margin-left: 8px;">+ 新建标签</a-button>
@@ -12,7 +12,7 @@
     <div style="display: flex; flex-direction: column; height: 60vh;">
       <!-- 分割线上方的当前选中的标签 -->
        
-      <div>
+      <div style="margin-bottom: 1rem;">
         已选择的标签：
       </div>
       <div style="border-bottom: 1px solid #f0f0f0; padding-bottom: 16px;">
@@ -44,23 +44,30 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, onMounted} from 'vue';
 import { http } from '../../http';
 
 const props = defineProps({
   labelGroupType: {
     type: String,
     required: true
-  }
+  },
+  modelValue: {
+    type: Array,
+  },
 });
 
 const emit = defineEmits(['update:modelValue']);
 
-const selectedLabels = ref([]);
+const selectedLabels = ref([...props.modelValue]);
 const modalVisible = ref(false);
 const labelGroupList = ref([]);
 const selectedLabelGroup = ref([]);
 const labelList = ref([]);
+
+onMounted(() => {
+  console.log(props)
+})
 
 const columns = [
   { title: '标签名称', dataIndex: 'label_name', key: 'label_name' },
@@ -104,11 +111,17 @@ const addLabel = (label) => {
   if (!selectedLabels.value.some(item => item.label_id === label.label_id)) {
     selectedLabels.value.push(label);
   }
+  console.log(props)
 };
 
 const removeLabel = (label) => {
   selectedLabels.value = selectedLabels.value.filter(item => item.label_id !== label.label_id);
 };
+
+watch(props.modelValue, (newVal) => {
+  console.log(newVal);
+  selectedLabels.value = newVal
+})
 
 watch(selectedLabelGroup, () => {
   fetchLabelList();

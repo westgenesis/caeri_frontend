@@ -23,8 +23,10 @@
                     {{ record.address }}
                 </template>
                 <template v-if="column.key === 'labels'">
-                    <span v-for="label in record.labels" :key="label.label_id" :style="{ backgroundColor: label.color, marginRight: '5px' }">
-                        {{ label.label_name }}
+                    <span v-for="label in record.labels" :key="label.label_id">
+                        <a-tag :color="label.color">
+                            {{ label.label_name }}
+                        </a-tag>
                     </span>
                 </template>
                 <template v-if="column.key === 'comment'">
@@ -49,7 +51,7 @@
                 <a-form-item label="联系电话" name="phone">
                     <a-input v-model:value="createFormData.phone" />
                 </a-form-item>
-                <LabelSelector v-model="selectedLabels" label-group-type="case" />
+                <LabelSelector v-model="selectedLabels" label-group-type="client" />
                 <a-form-item label="备注" name="comment">
                     <a-input v-model:value="createFormData.comment" />
                 </a-form-item>
@@ -68,7 +70,7 @@
                 <a-form-item label="联系电话" name="phone">
                     <a-input v-model:value="editFormData.phone" />
                 </a-form-item>
-                <LabelSelector v-model="selectedLabels" label-group-type="case" />
+                <LabelSelector v-model="selectedLabels" label-group-type="client" />
                 <a-form-item label="备注" name="comment">
                     <a-input v-model:value="editFormData.comment" />
                 </a-form-item>
@@ -138,10 +140,12 @@ const fetchLabelOptions = async () => {
 
 const showCreateModal = () => {
     createModalVisible.value = true;
+    selectedLabels.value = [];
     Object.assign(createFormData, { name: '', address: '', phone: '', label_ids: [], comment: '' });
 };
 
 const createCustomer = async () => {
+    createFormData.label_ids = selectedLabels.value.map(label => label.label_id);
     await http.post('/test/v1/customers/create_customer', createFormData);
     createModalVisible.value = false;
     fetchCustomerList();
@@ -152,12 +156,14 @@ const showEditModal = (record) => {
     editFormData.name = record.name;
     editFormData.address = record.address;
     editFormData.phone = record.phone;
-    editFormData.label_ids = record.labels.map(label => label.label_id);
     editFormData.comment = record.comment;
+    // 设置 selectedLabels 为当前行的标签值
+    selectedLabels.value = [...record.labels]; 
     editModalVisible.value = true;
 };
 
 const updateCustomer = async () => {
+    editFormData.label_ids = selectedLabels.value.map(label => label.label_id);
     await http.post('/test/v1/customers/update_customer', editFormData);
     editModalVisible.value = false;
     fetchCustomerList();

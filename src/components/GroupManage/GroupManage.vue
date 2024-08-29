@@ -157,7 +157,6 @@ const showEditModal = (record) => {
 };
 
 const updateGroup = async () => {
-    console.log(editFormData);
     if (editFormData.group_id === editFormData.parent_group_id) {
         ElMessage.error('上级组织不能是当前组织本身!');
         return;
