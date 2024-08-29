@@ -7,6 +7,7 @@ import RoleManage from '../components/RoleManage/RoleManage.vue';
 import UserManage from '../components/UserManage/UserManage.vue';
 import GroupManage from '../components/GroupManage/GroupManage.vue';
 import LabelManage from '../components/LabelManage/LabelManage.vue';
+import CustomerManage from '../components/CustomerManage/CustomerManage.vue';
 
 const routes = [
   {
@@ -48,6 +49,14 @@ const routes = [
     }
   },
   {
+    path: '/customerManage',
+    component: CustomerManage,
+    name: 'CustomerManage',
+    meta: {
+      breadcrumb: ['系统管理', '客户信息管理']
+    }
+  },
+  {
     path: '/groupManage',
     component: GroupManage,
     name: 'GroupManage',
@@ -62,7 +71,7 @@ const routes = [
     meta: {
       breadcrumb: ['标签管理', '标签库']
     }
-  }
+  },
 ];
 
 const router = createRouter({

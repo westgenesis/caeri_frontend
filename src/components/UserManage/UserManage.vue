@@ -23,7 +23,7 @@
 
         <a-modal title="新增用户" v-model:visible="createModalVisible" @ok="createUser" @cancel="handleCancel" okText="确定"
             cancelText="取消">
-            <a-form :form="createForm">
+            <a-form :form="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
                 <a-form-item label="用户名" name="name">
                     <a-input v-model:value="createFormData.name" />
                 </a-form-item>
@@ -47,7 +47,7 @@
 
         <a-modal title="编辑用户" v-model:visible="editModalVisible" @ok="updateUser" @cancel="handleCancel" okText="确定"
             cancelText="取消">
-            <a-form :form="editForm">
+            <a-form :form="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
                 <a-form-item label="用户名" name="name">
                     <a-input v-model:value="editFormData.name" />
                 </a-form-item>

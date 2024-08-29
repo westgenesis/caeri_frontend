@@ -20,6 +20,12 @@ importers:
       dayjs:
         specifier: ^1.11.11
         version: 1.11.11
+      echarts:
+        specifier: ^5.5.1
+        version: 5.5.1
+      echarts-for-vue:
+        specifier: ^1.4.1
+        version: 1.4.1(echarts@5.5.1)(vue@3.4.31(typescript@5.5.3))
       element-plus:
         specifier: ^2.6.3
         version: 2.7.6(vue@3.4.31(typescript@5.5.3))
@@ -638,6 +644,9 @@ packages:
   '@sxzz/popperjs-es@2.11.7':
     resolution: {integrity: sha512-Ccy0NlLkzr0Ex2FKvh2X+OyERHXJ88XJ1MXtsI9y9fGexlaXaVTPzBCRBwIxFkORuOb+uBqeu+RqnpgYTEZRUQ==}
 
+  '@types/echarts@4.9.22':
+    resolution: {integrity: sha512-7Fo6XdWpoi8jxkwP7BARUOM7riq8bMhmsCtSG8gzUcJmFhLo387tihoBYS/y5j7jl3PENT5RxeWZdN9RiwO7HQ==}
+
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
 
@@ -649,6 +658,9 @@ packages:
 
   '@types/web-bluetooth@0.0.16':
     resolution: {integrity: sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==}
+
+  '@types/zrender@4.0.6':
+    resolution: {integrity: sha512-1jZ9bJn2BsfmYFPBHtl5o3uV+ILejAtGrDcYSpT4qaVKEI/0YY+arw3XHU04Ebd8Nca3SQ7uNcLaqiL+tTFVMg==}
 
   '@vitejs/plugin-vue-jsx@4.0.1':
     resolution: {integrity: sha512-7mg9HFGnFHMEwCdB6AY83cVK4A6sCqnrjFYF4WIlebYAQVVJ/sC/CiTruVdrRlhrFoeZ8rlMxY9wYpPTIRhhAg==}
@@ -1080,6 +1092,15 @@ packages:
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
+
+  echarts-for-vue@1.4.1:
+    resolution: {integrity: sha512-o1VKvX5lCo5Nb8B5EEr6ztt+hRi4W9RnKn7wIk+l3fZ0S2yVXanqZckgBfO7v8vSS+xOJq/Df5flrNUQIRhn/Q==}
+    peerDependencies:
+      echarts: '>=3'
+      vue: '>=2'
+
+  echarts@5.5.1:
+    resolution: {integrity: sha512-Fce8upazaAXUVUVsjgV6mBnGuqgO+JNDlcgF79Dksy4+wgGpQB2lmYoO4TSweFg/mZITdpGHomw/cNBJZj1icA==}
 
   electron-to-chromium@1.4.818:
     resolution: {integrity: sha512-eGvIk2V0dGImV9gWLq8fDfTTsCAeMDwZqEPMr+jMInxZdnp9Us8UpovYpRCf9NQ7VOFgrN2doNSgvISbsbNpxA==}
@@ -2036,6 +2057,9 @@ packages:
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
+  tslib@2.3.0:
+    resolution: {integrity: sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==}
+
   tslib@2.6.3:
     resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
 
@@ -2274,6 +2298,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  zrender@5.6.0:
+    resolution: {integrity: sha512-uzgraf4njmmHAbEUxMJ8Oxg+P3fT04O+9p7gY+wJRVxo8Ge+KmYv0WJev945EH4wFuc4OY2NLXz46FZrWS9xJg==}
 
 snapshots:
 
@@ -2758,6 +2785,10 @@ snapshots:
 
   '@sxzz/popperjs-es@2.11.7': {}
 
+  '@types/echarts@4.9.22':
+    dependencies:
+      '@types/zrender': 4.0.6
+
   '@types/estree@1.0.5': {}
 
   '@types/lodash-es@4.17.12':
@@ -2767,6 +2798,8 @@ snapshots:
   '@types/lodash@4.17.6': {}
 
   '@types/web-bluetooth@0.0.16': {}
+
+  '@types/zrender@4.0.6': {}
 
   '@vitejs/plugin-vue-jsx@4.0.1(vite@5.3.3(less@4.2.0)(terser@5.31.6))(vue@3.4.31(typescript@5.5.3))':
     dependencies:
@@ -2925,7 +2958,7 @@ snapshots:
 
   '@vueuse/shared@9.13.0(vue@3.4.31(typescript@5.5.3))':
     dependencies:
-      vue-demi: 0.14.8(vue@3.4.31(typescript@5.5.3))
+      vue-demi: 0.14.10(vue@3.4.31(typescript@5.5.3))
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -3316,6 +3349,17 @@ snapshots:
       underscore: 1.13.6
 
   eastasianwidth@0.2.0: {}
+
+  echarts-for-vue@1.4.1(echarts@5.5.1)(vue@3.4.31(typescript@5.5.3)):
+    dependencies:
+      '@types/echarts': 4.9.22
+      echarts: 5.5.1
+      vue: 3.4.31(typescript@5.5.3)
+
+  echarts@5.5.1:
+    dependencies:
+      tslib: 2.3.0
+      zrender: 5.6.0
 
   electron-to-chromium@1.4.818: {}
 
@@ -4364,6 +4408,8 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
+  tslib@2.3.0: {}
+
   tslib@2.6.3: {}
 
   tty-browserify@0.0.1: {}
@@ -4605,3 +4651,7 @@ snapshots:
   yaml@2.4.5: {}
 
   yocto-queue@0.1.0: {}
+
+  zrender@5.6.0:
+    dependencies:
+      tslib: 2.3.0

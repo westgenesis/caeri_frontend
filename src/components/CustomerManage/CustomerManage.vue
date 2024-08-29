@@ -1,0 +1,183 @@
+<template>
+    <div style="margin: 20px;">
+        <a-page-header title="客户管理" />
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <a-input-search v-model:value="searchText" placeholder="输入客户名称" style="width: 200px" 
+                @search="fetchCustomerList" />
+            <a-button type="primary" @click="showCreateModal">新增客户</a-button>
+        </div>
+
+        <a-table :columns="columns" :dataSource="pagedCustomerList" :rowKey="record => record.customer_id" 
+            :pagination="paginationConfig">
+            <template #bodyCell="{ column, record }">
+                <template v-if="column.key === 'customer_id'">
+                    {{ record.customer_id }}
+                </template>
+                <template v-if="column.key === 'name'">
+                    {{ record.name }}
+                </template>
+                <template v-if="column.key === 'phone'">
+                    {{ record.phone }}
+                </template>
+                <template v-if="column.key === 'address'">
+                    {{ record.address }}
+                </template>
+                <template v-if="column.key === 'labels'">
+                    <span v-for="label in record.labels" :key="label.label_id" :style="{ backgroundColor: label.color, marginRight: '5px' }">
+                        {{ label.label_name }}
+                    </span>
+                </template>
+                <template v-if="column.key === 'comment'">
+                    {{ record.comment }}
+                </template>
+                <template v-if="column.key === 'action'">
+                    <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
+                    <a-button type="link" size="small" @click="deleteCustomer(record.customer_id)">删除</a-button>
+                </template>
+            </template>
+        </a-table>
+
+        <a-modal title="新增客户" v-model:visible="createModalVisible" @ok="createCustomer" @cancel="handleCancel" okText="确定"
+            cancelText="取消">
+            <a-form :form="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
+                <a-form-item label="客户名称" name="name">
+                    <a-input v-model:value="createFormData.name" />
+                </a-form-item>
+                <a-form-item label="地址" name="address">
+                    <a-input v-model:value="createFormData.address" />
+                </a-form-item>
+                <a-form-item label="联系电话" name="phone">
+                    <a-input v-model:value="createFormData.phone" />
+                </a-form-item>
+                <LabelSelector v-model="selectedLabels" label-group-type="case" />
+                <a-form-item label="备注" name="comment">
+                    <a-input v-model:value="createFormData.comment" />
+                </a-form-item>
+            </a-form>
+        </a-modal>
+
+        <a-modal title="编辑客户" v-model:visible="editModalVisible" @ok="updateCustomer" @cancel="handleCancel" okText="确定"
+            cancelText="取消">
+            <a-form :form="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
+                <a-form-item label="客户名称" name="name">
+                    <a-input v-model:value="editFormData.name" />
+                </a-form-item>
+                <a-form-item label="地址" name="address">
+                    <a-input v-model:value="editFormData.address" />
+                </a-form-item>
+                <a-form-item label="联系电话" name="phone">
+                    <a-input v-model:value="editFormData.phone" />
+                </a-form-item>
+                <LabelSelector v-model="selectedLabels" label-group-type="case" />
+                <a-form-item label="备注" name="comment">
+                    <a-input v-model:value="editFormData.comment" />
+                </a-form-item>
+            </a-form>
+        </a-modal>
+    </div>
+</template>
+
+<script setup>
+import { ref, reactive, onMounted, computed } from 'vue';
+import { http } from '../../http';
+import LabelSelector from '../LabelManage/LabelSelector.vue';
+
+const selectedLabels = ref([]);
+
+const searchText = ref('');
+const customerList = ref([]);
+const createModalVisible = ref(false);
+const editModalVisible = ref(false);
+const createFormData = reactive({ name: '', address: '', phone: '', label_ids: [], comment: '' });
+const editFormData = reactive({ customer_id: '', name: '', address: '', phone: '', label_ids: [], comment: '' });
+const labelOptions = ref([]);
+const customerListFiltered = ref([]);
+
+const columns = [
+    { title: '客户编号', dataIndex: 'customer_id', key: 'customer_id' },
+    { title: '客户名称', dataIndex: 'name', key: 'name' },
+    { title: '联系电话', dataIndex: 'phone', key: 'phone' },
+    { title: '地址', dataIndex: 'address', key: 'address' },
+    { title: '客户标签', dataIndex: 'labels', key: 'labels' },
+    { title: '备注', dataIndex: 'comment', key: 'comment' },
+    {
+        title: '操作',
+        key: 'action',
+        scopedSlots: { customRender: 'action' },
+    },
+];
+
+const paginationConfig = reactive({
+    total: 0,
+    pageSize: 10,
+    current: 1,
+    showSizeChanger: false,
+    showQuickJumper: true,
+    showTotal: total => `共 ${total} 条`,
+    onChange: (page) => {
+        paginationConfig.current = page;
+    },
+});
+
+const fetchCustomerList = async () => {
+    const { data } = await http.post('/test/v1/customers/get_customer_list', { name: searchText.value || undefined });
+    customerList.value = data;
+    paginationConfig.total = data.length;
+};
+
+const pagedCustomerList = computed(() => {
+    const start = (paginationConfig.current - 1) * paginationConfig.pageSize;
+    const end = start + paginationConfig.pageSize;
+    return customerList.value.slice(start, end);
+});
+
+const fetchLabelOptions = async () => {
+    const { data } = await http.post('/test/v1/labels/get_label_list', {});
+    labelOptions.value = data;
+};
+
+const showCreateModal = () => {
+    createModalVisible.value = true;
+    Object.assign(createFormData, { name: '', address: '', phone: '', label_ids: [], comment: '' });
+};
+
+const createCustomer = async () => {
+    await http.post('/test/v1/customers/create_customer', createFormData);
+    createModalVisible.value = false;
+    fetchCustomerList();
+};
+
+const showEditModal = (record) => {
+    editFormData.customer_id = record.customer_id;
+    editFormData.name = record.name;
+    editFormData.address = record.address;
+    editFormData.phone = record.phone;
+    editFormData.label_ids = record.labels.map(label => label.label_id);
+    editFormData.comment = record.comment;
+    editModalVisible.value = true;
+};
+
+const updateCustomer = async () => {
+    await http.post('/test/v1/customers/update_customer', editFormData);
+    editModalVisible.value = false;
+    fetchCustomerList();
+};
+
+const deleteCustomer = async (customer_id) => {
+    await http.post('/test/v1/customers/delete_customer', { customer_id });
+    fetchCustomerList();
+};
+
+const handleCancel = () => {
+    createModalVisible.value = false;
+    editModalVisible.value = false;
+};
+
+onMounted(() => {
+    fetchCustomerList();
+    fetchLabelOptions();
+});
+</script>
+
+<style scoped>
+</style>
