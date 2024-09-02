@@ -1,7 +1,7 @@
 <template>
     <div>
       <div>上午好，Admin!</div>
-
+  
       <div class="flex h-[160px]">
         <a-card style="width: 70%">
           <strong>快捷操作</strong>
@@ -24,7 +24,7 @@
             </div>
           </div>
         </a-card>
-
+  
         <div class="charts" style="padding: 1rem; border: 1px #eee solid">
           <div class="chart-container">
             <div class="chart-title">项目总数</div>
@@ -35,7 +35,7 @@
             <div id="taskChart" class="chart"></div>
           </div>
         </div>
-
+  
       </div>
     </div>
   </template>
@@ -45,61 +45,84 @@
   import usecase from './usecase.png'
   import mission from './mission.png'
   import report from './report.png'
-  import { onMounted } from 'vue'
+  import { onMounted, onUnmounted } from 'vue'
   
-  onMounted(() => {
+  let projectChart: echarts.ECharts | null = null
+  let taskChart: echarts.ECharts | null = null
+  
+  const initCharts = () => {
     if (typeof echarts !== 'undefined') {
       // 初始化项目总数图表
-      const projectChart = echarts.init(document.getElementById('projectChart'))
-      projectChart.setOption({
-        title: { text: '', subtext: '', left: 'center' },
-        tooltip: { trigger: 'item' },
-        legend: { orient: 'horizontal', left: 'left', bottom: 10 },
-        series: [
-          {
-            name: '项目',
-            type: 'pie',
-            radius: ['40%', '50%'], // 修改为环形图
-            data: [
-              { value: 1048, name: '已完成' },
-              { value: 735, name: '进行中' }
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
+      const projectChartContainer = document.getElementById('projectChart')
+      if (projectChartContainer) {
+        projectChart = echarts.init(projectChartContainer)
+        projectChart.setOption({
+          title: { text: '', subtext: '', left: 'center' },
+          tooltip: { trigger: 'item' },
+          legend: { orient: 'horizontal', left: 'left', bottom: 10 },
+          series: [
+            {
+              name: '项目',
+              type: 'pie',
+              radius: ['40%', '50%'], // 修改为环形图
+              data: [
+                { value: 1048, name: '已完成' },
+                { value: 735, name: '进行中' }
+              ],
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
               }
             }
-          }
-        ]
-      })
+          ]
+        })
+      }
   
       // 初始化测试任务总数图表
-      const taskChart = echarts.init(document.getElementById('taskChart'))
-      taskChart.setOption({
-        title: { text: '', subtext: '', left: 'center' },
-        tooltip: { trigger: 'item' },
-        legend: { orient: 'horizontal', left: 'left', bottom: 10 },
-        series: [
-          {
-            name: '任务',
-            type: 'pie',
-            radius: ['40%', '50%'], // 修改为环形图
-            data: [
-              { value: 580, name: '已完成' },
-              { value: 234, name: '进行中' }
-            ],
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
+      const taskChartContainer = document.getElementById('taskChart')
+      if (taskChartContainer) {
+        taskChart = echarts.init(taskChartContainer)
+        taskChart.setOption({
+          title: { text: '', subtext: '', left: 'center' },
+          tooltip: { trigger: 'item' },
+          legend: { orient: 'horizontal', left: 'left', bottom: 10 },
+          series: [
+            {
+              name: '任务',
+              type: 'pie',
+              radius: ['40%', '50%'], // 修改为环形图
+              data: [
+                { value: 580, name: '已完成' },
+                { value: 234, name: '进行中' }
+              ],
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
               }
             }
-          }
-        ]
-      })
+          ]
+        })
+      }
+    }
+  }
+  
+  onMounted(() => {
+    console.log('mounted')
+    initCharts()
+  })
+  
+  onUnmounted(() => {
+    if (projectChart) {
+      projectChart.dispose()
+    }
+    if (taskChart) {
+      taskChart.dispose()
     }
   })
   </script>
@@ -135,7 +158,7 @@
   .charts {
     display: flex;
     justify-content: space-around;
-
+  
   }
   
   .chart-container {

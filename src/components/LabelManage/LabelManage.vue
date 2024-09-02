@@ -167,7 +167,7 @@
   
       <!-- 新增标签组 Modal -->
       <a-modal title="新增标签组" v-model:visible="createLabelGroupModalVisible" @ok="createLabelGroup" @cancel="handleCancel" okText="确定" cancelText="取消">
-        <a-form :form="createLabelGroupForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
+        <a-form :form="createLabelGroupForm" :label-col="{ span: 7 }" :wrapper-col="{ span: 17 }" labelAlign="left">
           <a-form-item label="标签组名称" name="label_group_name">
             <a-input v-model:value="createLabelGroupFormData.label_group_name" />
           </a-form-item>
