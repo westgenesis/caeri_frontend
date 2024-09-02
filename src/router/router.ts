@@ -8,6 +8,8 @@ import UserManage from '../components/UserManage/UserManage.vue';
 import GroupManage from '../components/GroupManage/GroupManage.vue';
 import LabelManage from '../components/LabelManage/LabelManage.vue';
 import CustomerManage from '../components/CustomerManage/CustomerManage.vue';
+import ProjectManage from '../components/ProjectManage/ProjectManage.vue';
+import CreateProject from '../components/ProjectManage/CreateProject.vue';
 
 const routes = [
   {
@@ -72,6 +74,16 @@ const routes = [
       breadcrumb: ['标签管理', '标签库']
     }
   },
+  {
+    path: '/projectManage',
+    component: ProjectManage,
+    name: 'projectManage'
+  },
+  {
+    path: '/createProject',
+    component: CreateProject,
+    name: 'createProject'
+  }
 ];
 
 const router = createRouter({

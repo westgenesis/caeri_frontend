@@ -116,7 +116,7 @@ export default {
         });
 
         const fetchUserList = async () => {
-            const { data } = await http.post('/test/v1/users/get_user_list', { name: searchText.value || undefined });
+            const { data } = await http.post('/test/v1/users/get_user_list', { name: undefined });
             userList.value = data;
             paginationConfig.total = data.total;
         };

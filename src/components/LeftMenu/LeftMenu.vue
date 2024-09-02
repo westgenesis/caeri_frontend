@@ -10,7 +10,7 @@ import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, h } from 'vue';
 import type { MenuProps, ItemType } from 'ant-design-vue';
-import { HomeOutlined, SettingOutlined, SnippetsOutlined} from '@ant-design/icons-vue';
+import { HomeOutlined, SettingOutlined, SnippetsOutlined, ProjectOutlined} from '@ant-design/icons-vue';
 import { getItem } from './menu.ts';
 import { http } from '../../http'
 
@@ -31,6 +31,7 @@ const fetchRoleList = async () => {
 
 const items: ItemType[] = [
   getItem('工作台', '/home', () => h(HomeOutlined)),
+  getItem('项目管理', '/projectManage', () => h(ProjectOutlined)),
   getItem('系统管理', '/roleManage', () => h(SettingOutlined), [
     getItem('角色管理', '/roleManage'),
     getItem('用户管理', '/userManage'),
@@ -39,7 +40,7 @@ const items: ItemType[] = [
   ]),
   getItem('标签管理', '/labelManage', () => h(SnippetsOutlined), [
     getItem('标签库', '/labelManage'),
-  ])
+  ]),
 ];
 
 const filteredItems = ref([...items]);  // 使用深拷贝来初始化

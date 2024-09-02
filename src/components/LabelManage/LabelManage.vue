@@ -114,7 +114,7 @@
       </a-modal>
   
       <!-- 编辑标签 Modal -->
-      <a-modal title="编辑标签" v-model:visible="editModalVisible" @ok="updateLabel" @cancel="handleCancel" okText="确定" cancelText="取消" >
+      <a-modal title="编辑标签" v-model:visible="editModalVisible" @ok="updateLabel" @cancel="handleCancel" okText="确定" cancelText="取消">
         <a-form :form="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
           <a-form-item label="标签名称" name="label_name">
             <a-input v-model:value="editFormData.label_name" />
@@ -171,7 +171,6 @@
           </a-form-item>
           <a-form-item label="标签组类型" name="label_group_type">
             <a-select v-model:value="createLabelGroupFormData.label_group_type" allow-clear>
-              <a-select-option value="all">全部</a-select-option>
               <a-select-option value="case">用例</a-select-option>
               <a-select-option value="sample">样品</a-select-option>
               <a-select-option value="task">任务</a-select-option>
@@ -190,7 +189,6 @@
           </a-form-item>
           <a-form-item label="标签组类型" name="label_group_type">
             <a-select v-model:value="editLabelGroupFormData.label_group_type" allow-clear>
-              <a-select-option value="all">全部</a-select-option>
               <a-select-option value="case">用例</a-select-option>
               <a-select-option value="sample">样品</a-select-option>
               <a-select-option value="task">任务</a-select-option>
@@ -242,13 +240,13 @@
   
   const createLabelGroupFormData = reactive({
     label_group_name: '',
-    label_group_type: 'all'
+    label_group_type: null
   });
   
   const editLabelGroupFormData = reactive({
     label_group_name: '',
     label_group_id: '',
-    label_group_type: 'all'
+    label_group_type: null
   });
   
   const columns = [
@@ -256,8 +254,7 @@
     { title: '可见范围', dataIndex: 'visual_range', key: 'visual_range' },
     { title: '创建人', dataIndex: 'creator', key: 'creator', width: '100' },
     { title: '创建时间', dataIndex: 'created_time', key: 'created_time' }, // 新支持的列
-    { title: '操作', key: 'action', scopedSlots
-    : { customRender: 'action' }},
+    { title: '操作', key: 'action', scopedSlots: { customRender: 'action' }},
 ];
 
 const paginationConfig = reactive({
@@ -350,6 +347,10 @@ const createLabelGroup = async () => {
     ElMessage.error('请填写标签组名称');
     return;
   }
+  if (!createLabelGroupFormData.label_group_type) {
+    ElMessage.error('请选择标签组类型');
+    return;
+  }
   await http.post('/test/v1/labels/create_label_group', createLabelGroupFormData);
   createLabelGroupModalVisible.value = false;
   fetchLabelGroupList();
@@ -357,7 +358,7 @@ const createLabelGroup = async () => {
 
 const showCreateLabelGroupModal = () => {
   createLabelGroupModalVisible.value = true;
-  Object.assign(createLabelGroupFormData, { label_group_name: '', label_group_type: activeTab.value });
+  Object.assign(createLabelGroupFormData, { label_group_name: '', label_group_type: null });
 };
 
 const showEditLabelGroupModal = (group) => {
@@ -370,6 +371,10 @@ const showEditLabelGroupModal = (group) => {
 const updateLabelGroup = async () => {
   if (!editLabelGroupFormData.label_group_name) {
     ElMessage.error('请填写标签组名称');
+    return;
+  }
+  if (!editLabelGroupFormData.label_group_type) {
+    ElMessage.error('请选择标签组类型');
     return;
   }
   await http.post('/test/v1/labels/update_label_group', editLabelGroupFormData);

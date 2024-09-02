@@ -6,16 +6,20 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import cdnImport from 'vite-plugin-cdn-import'
 
 export default defineConfig({
-  plugins: [vue(), vueJsx(), nodePolyfills(),   
-    // ...
-    AutoImport({
-      resolvers: [ElementPlusResolver()],
-    }),
-    Components({
-      resolvers: [ElementPlusResolver()],
-    }),
+  plugins: [vue(), vueJsx(), nodePolyfills(),cdnImport({
+    modules: [
+      {
+        name: 'ant-design-vue',
+        var: 'Antd',
+        path: 'https://cdn.jsdelivr.net/npm/ant-design-vue/dist/antd.min.js',
+        css: 'https://cdn.jsdelivr.net/npm/ant-design-vue/dist/antd.min.css'
+      },
+
+    ]
+  }),
   ],
   resolve: {
     alias: {
