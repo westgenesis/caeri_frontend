@@ -183,7 +183,7 @@
   
       <!-- 编辑标签组 Modal -->
       <a-modal title="编辑标签组" v-model:visible="editLabelGroupModalVisible" @ok="updateLabelGroup" @cancel="handleCancel" okText="确定" cancelText="取消">
-        <a-form :form="editLabelGroupForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
+        <a-form :form="editLabelGroupForm" :label-col="{ span: 7 }" :wrapper-col="{ span: 17 }" labelAlign="left">
           <a-form-item label="标签组名称" name="label_group_name">
             <a-input v-model:value="editLabelGroupFormData.label_group_name" />
           </a-form-item>

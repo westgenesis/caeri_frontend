@@ -78,7 +78,7 @@
             </a-form-item>
             <div class="flex justify-center">
                 <a-button type="primary" @click="createProject">创建项目</a-button>
-                <a-button @click="returnToProject">取消</a-button>
+                <a-button @click="returnToProject" style="margin-left: 1rem">取消</a-button>
             </div>
 
         </a-form>
@@ -169,6 +169,10 @@ const createProject = async () => {
         ElMessage.error('创建项目失败');
     }
 };
+
+const returnToProject = async () => {
+    router.push('/projectManage');
+}
 
 onMounted(() => {
     fetchUserList();
