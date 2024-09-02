@@ -59,7 +59,6 @@ const filterItemsByRoleLimit = (items: ItemType[], role_limit: any) => {
 const updateFilteredItems = async () => {
   if (localStorage.getItem('account') === 'admin') {
     filteredItems.value = [...items];  // 使用深拷贝来重新赋值
-    console.log(items);
     return;
   }
 

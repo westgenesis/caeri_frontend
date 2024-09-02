@@ -87,7 +87,7 @@ export const menuPermissions = [
     },
     {
         title: '标签管理',
-        key: 'labelManage',
+        key: '/labelManage',
         children: [],
     }
 ];

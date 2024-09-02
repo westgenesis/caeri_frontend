@@ -110,12 +110,14 @@ const handleCancel = () => {
 const addLabel = (label) => {
   if (!selectedLabels.value.some(item => item.label_id === label.label_id)) {
     selectedLabels.value.push(label);
+    emit('update:modelValue', selectedLabels.value);
   }
   console.log(props)
 };
 
 const removeLabel = (label) => {
   selectedLabels.value = selectedLabels.value.filter(item => item.label_id !== label.label_id);
+  emit('update:modelValue', selectedLabels.value);
 };
 
 watch(props.modelValue, (newVal) => {

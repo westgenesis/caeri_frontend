@@ -90,7 +90,7 @@ onMounted(() => {
             />
           </div>
           <div class="flex">
-            <el-checkbox v-model="rememberMe" label="记住密码"></el-checkbox>
+            <el-checkbox v-model="rememberMe" label="记住账号"></el-checkbox>
           </div>
           <div class="mb-[20px] mt-[12px] flex-center">
             <el-button type="button" class="a-button primary large" long @click="onSubmitFormData">

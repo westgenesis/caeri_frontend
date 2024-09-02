@@ -161,6 +161,11 @@ const createProject = async () => {
         return;
     }
 
+    const params = {
+        ...createFormData,
+        file_list: createFormData.file_list.map(x => x.name)
+    }
+
     try {
         await http.post('/test/v1/projects/create_projects', createFormData);
         ElMessage.success('创建项目成功');
@@ -182,12 +187,12 @@ onMounted(() => {
 const onBeforeUpload: UploadProps['onChange'] = async (file) => {
   const formData = new FormData();
   const info = new Blob([
-    JSON.stringify({ db_id: 'temp', category: 'knowledges' })
+    JSON.stringify({ category: 'knowledges' })
   ]);
   formData.append('user_file', file.raw as File);
   formData.append('info', info);
   createFormData.file_list = fileList;
-  await http.post(`/test/v1//upload_project_file`, formData);
+  await http.post(`/test/v1/upload_project_file`, formData);
 };
 </script>
 

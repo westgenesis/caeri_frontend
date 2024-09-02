@@ -18,10 +18,8 @@
             </template>
         </a-table>
 
-
         <!-- 编辑项目模态框 -->
-        <a-modal title="编辑项目" v-model:visible="editModalVisible" @ok="updateProject" @cancel="handleCancel" okText="确定"
-            cancelText="取消">
+        <a-drawer title="编辑项目" :visible="editDrawerVisible" @close="handleCancel" :width="600">
             <a-form :form="editForm">
                 <a-form-item label="项目名称" name="project_name">
                     <a-input v-model:value="editFormData.project_name" />
@@ -34,41 +32,42 @@
                 </a-form-item>
                 <a-form-item label="项目经理" name="manager_id">
                     <a-select v-model:value="editFormData.manager_id">
-                        <a-select-option value="001">小王</a-select-option>
-                        <a-select-option value="002">小李</a-select-option>
+                        <a-select-option v-for="user in userList" :key="user.user_id" :value="user.user_id">{{ user.user_name }}</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item label="项目成员" name="member_ids">
                     <a-select v-model:value="editFormData.member_ids" mode="multiple">
-                        <a-select-option value="001">小李</a-select-option>
-                        <a-select-option value="002">小张</a-select-option>
-                        <a-select-option value="003">小王</a-select-option>
+                        <a-select-option v-for="user in userList" :key="user.user_id" :value="user.user_id">{{ user.user_name }}</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item label="客户信息" name="customer_id">
                     <a-select v-model:value="editFormData.customer_id">
-                        <a-select-option value="001">客户A</a-select-option>
-                        <a-select-option value="002">客户B</a-select-option>
+                        <a-select-option v-for="customer in customerList" :key="customer.customer_id" :value="customer.customer_id">{{ customer.name }}</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item label="项目计划周期" name="period">
-                    <a-range-picker v-model:value="editFormData.period" />
+                    <a-range-picker v-model:value="editFormData.period" @change="changePeriod" />
                 </a-form-item>
                 <a-form-item label="项目优先级" name="priority">
-                    <a-radio-group v-model:value="editFormData.priority">
-                        <a-radio value="高">高</a-radio>
-                        <a-radio value="中">中</a-radio>
-                        <a-radio value="低">低</a-radio>
+                    <a-radio-group v-model:value="editFormData.priority" button-style="solid">
+                        <a-radio-button value="high">高</a-radio-button>
+                        <a-radio-button value="medium">中</a-radio-button>
+                        <a-radio-button value="low">低</a-radio-button>
                     </a-radio-group>
                 </a-form-item>
                 <a-form-item label="上传项目附件" name="files">
-                    <input type="file" @change="handleEditFileUpload" multiple />
-                    <ul>
-                        <li v-for="file in editFormData.files" :key="file.name">{{ file.name }}</li>
-                    </ul>
+                    <el-upload ref="uploadRef" :auto-upload="false" :on-change="onBeforeUpload" accept=".doc,.docx,.pdf,.xlsx,.png" v-model:file-list="fileList">
+                        <template #trigger>
+                            <el-button>上传文件</el-button>
+                        </template>
+                    </el-upload>
                 </a-form-item>
             </a-form>
-        </a-modal>
+            <div class="flex justify-end">
+                <a-button type="primary" @click="updateProject">确定</a-button>
+                <a-button @click="handleCancel" style="margin-left: 1rem">取消</a-button>
+            </div>
+        </a-drawer>
     </div>
 </template>
 
@@ -77,18 +76,74 @@ import { ref, reactive, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { http } from '../../http';
 import { useRouter } from 'vue-router';
+import dayjs from 'dayjs';
 const router = useRouter();
 
 const searchText = ref('');
-const projectList = ref([]);
-const createModalVisible = ref(false);
-const editModalVisible = ref(false);
+const projectList = ref([
+    {
+        project_id: "6685hdjk76ad79fjald891",
+        project_name: "123",
+        period_start: "2024-07-16",
+        period_end: "2024-07-30",
+        priority: "low",
+        manager: {
+            user_id: "001",
+            user_name: "小王",
+            account: "10122",
+            passwd: "******",
+            email: "1012@qq.com",
+            user_status: true,
+            comment: "",
+            created_time: "2024-08-27T06:42:45",
+            user_role_id: "001"
+        },
+        members: [{
+            user_id: "002",
+            user_name: "小李",
+            account: "10123",
+            passwd: "******",
+            email: "10123@qq.com",
+            user_status: true,
+            comment: "",
+            created_time: "2024-08-27T06:42:45",
+            user_role_id: "001"
+        }],
+        customer: {
+            customer_id: "001",
+            name: "123",
+            address: "沙坪坝",
+            phone: "18716528181",
+            label_ids: [
+                "002"
+            ],
+            comment: "123"
+        },
+        file_list: ["文件1.pdf", "文件2.doc"],
+        created_time: '2024-08-15 19:00:00',
+        creator: "admin",
+        comment: "123"
+    }
+]);
+const editDrawerVisible = ref(false);
 const createFormData = reactive({ project_name: '', project_number: '', comment: '', manager_id: '', member_ids: [], customer_id: '', period: [], priority: '', files: [] });
 const editFormData = reactive({ project_id: '', project_name: '', project_number: '', comment: '', manager_id: '', member_ids: [], customer_id: '', period: [], priority: '', files: [] });
+
+const userList = ref([]);
+const customerList = ref([]);
+const fileList = ref([]);
 
 const columns = [
     { title: '项目ID', dataIndex: 'project_id' },
     { title: '项目名称', dataIndex: 'project_name' },
+    { title: '项目编码', dataIndex: 'project_number' },
+    { title: '项目经理', dataIndex: 'manager', customRender: ({ text }) => text.user_name },
+    { title: '客户信息', dataIndex: 'customer', customRender: ({ text }) => text.name },
+    { title: '项目计划周期', dataIndex: 'period', customRender: ({ record }) => `${record.period_start} ~ ${record.period_end}` },
+    { title: '项目优先级', dataIndex: 'priority' },
+    { title: '创建时间', dataIndex: 'created_time' },
+    { title: '创建者', dataIndex: 'creator' },
+    { title: '项目描述', dataIndex: 'comment' },
     {
         title: '操作',
         key: 'action'
@@ -106,8 +161,28 @@ const paginationConfig = reactive({
     },
 });
 
+const fetchUserList = async () => {
+    try {
+        const response = await http.post('/test/v1/users/get_user_list', {});
+        userList.value = response.data;
+    } catch (error) {
+        ElMessage.error('获取用户列表失败');
+    }
+};
+
+const fetchCustomerList = async () => {
+    try {
+        const response = await http.post('/test/v1/customers/get_customer_list', {});
+        customerList.value = response.data;
+    } catch (error) {
+        ElMessage.error('获取客户列表失败');
+    }
+};
+
 onMounted(() => {
     fetchProjectList();
+    fetchUserList();
+    fetchCustomerList();
 });
 
 const toCreate = () => {
@@ -119,41 +194,44 @@ const fetchProjectList = async () => {
     projectList.value = data.data;
 };
 
-const showCreateModal = () => {
-    createModalVisible.value = true;
-};
-
-const createProject = async () => {
-    if (!createFormData.project_name) {
-        ElMessage.error('请输入项目名称');
-        return;
-    }
-
-    await http.post('/test/v1/projects/create_projects', createFormData);
-    ElMessage.success('创建项目成功');
-    createModalVisible.value = false;
-    fetchProjectList();
-};
-
 const showEditModal = (record) => {
     editFormData.project_id = record.project_id;
     editFormData.project_name = record.project_name;
     editFormData.project_number = record.project_number;
     editFormData.comment = record.comment;
-    editFormData.manager_id = record.manager_id;
-    editFormData.member_ids = record.member_ids;
-    editFormData.customer_id = record.customer_id;
-    editFormData.period = record.period;
+    editFormData.manager_id = record.manager.user_id;
+    editFormData.member_ids = record.members.map(member => member.user_id);
+    editFormData.customer_id = record.customer.customer_id;
+    editFormData.period = [dayjs(record.period_start), dayjs(record.period_end)];
     editFormData.priority = record.priority;
-    editModalVisible.value = true;
+    editDrawerVisible.value = true;
 };
 
 const updateProject = async () => {
-    await http.post('/test/v1/projects/update_project', editFormData);
-    ElMessage.success('更新项目成功');
-    editModalVisible.value = false;
-    fetchProjectList();
+    const params = {
+        ...editFormData,
+        period_start: editFormData.period[0],
+        period_end: editFormData.period[1],
+    };
+
+    try {
+        await http.post('/test/v1/projects/update_project', params);
+        ElMessage.success('更新项目成功');
+        editDrawerVisible.value = false;
+        fetchProjectList();
+    } catch (error) {
+        ElMessage.error('更新项目失败');
+    }
 };
+
+const changePeriod = (v, strs) => {
+    if (!strs?.length) {
+        return;
+    }
+    console.log(strs);
+    editFormData.period_start = strs[0];
+    editFormData.period_end = strs[1];
+}
 
 const deleteProject = async (projectId) => {
     await ElMessageBox.confirm('确定要删除该项目吗？', '警告', {
@@ -168,8 +246,7 @@ const deleteProject = async (projectId) => {
 };
 
 const handleCancel = () => {
-    createModalVisible.value = false;
-    editModalVisible.value = false;
+    editDrawerVisible.value = false;
 };
 
 const handleFileUpload = (event) => {
@@ -181,4 +258,8 @@ const handleEditFileUpload = (event) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+:deep(.el-upload__input) {
+    display: none !important;
+}
+</style>
