@@ -1,10 +1,10 @@
 <template>
   <a-form-item label="标签">
-    <div @click="showModal">
+    <div>
       <a-tag v-for="label in selectedLabels" :key="label.label_id" closable @close="removeLabel(label)" :color="label.color">
         {{ label.label_name }}
       </a-tag>
-      <a-button type="dashed" style="margin-left: 8px;">选择标签</a-button>
+      <a-button @click="showModal" type="dashed" style="margin-left: 8px;">选择标签</a-button>
     </div>
   </a-form-item>
 
