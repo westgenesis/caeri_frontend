@@ -2,13 +2,13 @@
     <div style="margin: 20px;">
         <a-page-header title="客户管理" />
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <a-input-search v-model:value="searchText" placeholder="输入客户名称" style="width: 200px" 
+            <a-input-search v-model:value="searchText" placeholder="输入客户名称" style="width: 200px"
                 @search="fetchCustomerList" />
             <a-button type="primary" @click="showCreateModal">新增客户</a-button>
         </div>
 
-        <a-table :columns="columns" :dataSource="pagedCustomerList" :rowKey="record => record.customer_id" 
-            :pagination="paginationConfig" :scroll="{ y: table_height}">
+        <a-table :columns="columns" :dataSource="pagedCustomerList" :rowKey="record => record.customer_id"
+            :pagination="paginationConfig" :scroll="{ y: table_height }">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'customer_id'">
                     {{ record.customer_id }}
@@ -39,9 +39,9 @@
             </template>
         </a-table>
 
-        <a-modal title="新增客户" v-model:visible="createModalVisible" @ok="createCustomer" @cancel="handleCancel" okText="确定"
-            cancelText="取消">
-            <a-form :form="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
+        <a-modal title="新增客户" v-model:visible="createModalVisible" @ok="createCustomer" @cancel="handleCancel"
+            okText="确定" cancelText="取消">
+            <a-form :form="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="createFormData" :rules="rules">
                 <a-form-item label="客户名称" name="name">
                     <a-input v-model:value="createFormData.name" />
                 </a-form-item>
@@ -60,7 +60,7 @@
 
         <a-modal title="编辑客户" v-model:visible="editModalVisible" @ok="updateCustomer" @cancel="handleCancel" okText="确定"
             cancelText="取消">
-            <a-form :form="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
+            <a-form :form="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="editFormData" :rules="rules">
                 <a-form-item label="客户名称" name="name">
                     <a-input v-model:value="editFormData.name" />
                 </a-form-item>
@@ -159,7 +159,7 @@ const showEditModal = (record) => {
     editFormData.phone = record.phone;
     editFormData.comment = record.comment;
     // 设置 selectedLabels 为当前行的标签值
-    selectedLabels.value = [...record.labels]; 
+    selectedLabels.value = [...record.labels];
     editModalVisible.value = true;
 };
 
@@ -184,7 +184,17 @@ onMounted(() => {
     fetchCustomerList();
     fetchLabelOptions();
 });
+
+const rules = {
+  phone: [{ validator: (_, value) => {
+        const phoneRegex = /^\d{1,20}$/;
+        if (!value || phoneRegex.test(value)) {
+            return Promise.resolve();
+        } else {
+            return Promise.reject('联系电话只能包含最多20位数字');
+        }
+    }, trigger: 'change' }],
+};
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
