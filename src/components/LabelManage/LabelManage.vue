@@ -12,7 +12,7 @@
       </a-tabs>
   
       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-        <div style="min-width: 15rem; border-right: 1px #f4f4f4 solid;">
+        <div style="min-width: 15rem; border-right: 1px #f4f4f4 solid; overflow: auto; max-height: 70vh;">
           <!-- 标签组管理 -->
           <div style="margin-bottom: 1rem;">标签分组</div>
           <a-menu mode="inline" v-model:selectedKeys="selectedLabelGroup">
