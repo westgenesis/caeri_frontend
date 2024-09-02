@@ -8,7 +8,7 @@
         </div>
 
         <a-table :columns="columns" :dataSource="userList" :rowKey="record => record.user_id"
-            pagination="paginationConfig">
+            pagination="paginationConfig" :scroll="{ y: table_height}">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'action'">
                     <a-button type="link" @click="showEditModal(record)">编辑</a-button>
@@ -222,6 +222,8 @@ export default {
             editModalVisible.value = false;
         };
 
+        const table_height = window.innerHeight * 0.55;
+
         return {
             searchText,
             userList,
@@ -239,6 +241,7 @@ export default {
             updateUser,
             deleteUser,
             handleCancel,
+            table_height,
         };
     },
 };

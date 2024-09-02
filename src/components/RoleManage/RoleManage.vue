@@ -8,7 +8,7 @@
         </div>
 
         <a-table :columns="columns" :dataSource="roleList" :rowKey="record => record.role_id"
-            pagination="paginationConfig">
+            pagination="paginationConfig" :scroll="{ y: table_height}">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'role_status'">
                     <a-tag>{{ record.role_status ? '启用' : '禁用' }}</a-tag>
@@ -94,6 +94,7 @@ export const menuPermissions = [
 
 export default {
     setup() {
+        const table_height = window.innerHeight * 0.55;
         const searchText = ref('');
         const roleList = ref([]);
         const createModalVisible = ref(false);
@@ -266,6 +267,7 @@ export default {
             onCreateCheck,
             onEditCheck,
             expandedKeys,
+            table_height
         };
     },
 };

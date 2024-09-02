@@ -8,7 +8,7 @@
         </div>
 
         <a-table :columns="columns" :dataSource="pagedGroupList" :rowKey="record => record.group_id"
-            :pagination="paginationConfig">
+            :pagination="paginationConfig" :scroll="{ y: table_height}">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'group_id'">
                     {{ record.group_id }}
@@ -94,6 +94,7 @@ const createFormData = reactive({ name: '', parent_group_id: null, users: [] });
 const editFormData = reactive({ group_id: '', name: '', parent_group_id: null, users: [] });
 const userOptions = ref([]);
 const groupListFiltered = ref([]);
+const table_height = window.innerHeight * 0.55;
 
 const columns = [
     { title: '序号', dataIndex: 'group_id', key: 'group_id' },

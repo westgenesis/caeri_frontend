@@ -30,7 +30,8 @@
           </a-menu>
         </div>
         <div style="flex: 1; padding-left: 20px;">
-          <a-table :columns="columns" :dataSource="filteredLabelList" :rowKey="record => record.label_id" :pagination="false">
+          <a-table :columns="columns" :dataSource="filteredLabelList" :rowKey="record => record.label_id" :pagination="false"
+            :scroll="{ y: table_height}">
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'action'">
                 <a-button type="link" size="small" @click="addLabel(record)">选择</a-button>
@@ -69,6 +70,7 @@ onMounted(() => {
   console.log(props)
 })
 
+const table_height = window.innerHeight * 0.55;
 const columns = [
   { title: '标签名称', dataIndex: 'label_name', key: 'label_name' },
   { title: '操作', key: 'action', scopedSlots: { customRender: 'action' }},

@@ -9,7 +9,7 @@
         </div>
 
         <a-table :columns="columns" :dataSource="projectList" :rowKey="record => record.project_id"
-            :pagination="paginationConfig">
+            :pagination="paginationConfig" :scroll="{ y: table_height}">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'action'">
                     <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
@@ -132,7 +132,7 @@ const editFormData = reactive({ project_id: '', project_name: '', project_number
 const userList = ref([]);
 const customerList = ref([]);
 const fileList = ref([]);
-
+const table_height = window.innerHeight * 0.55;
 const columns = [
     { title: '项目ID', dataIndex: 'project_id' },
     { title: '项目名称', dataIndex: 'project_name' },

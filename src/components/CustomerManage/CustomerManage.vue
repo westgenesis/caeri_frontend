@@ -8,7 +8,7 @@
         </div>
 
         <a-table :columns="columns" :dataSource="pagedCustomerList" :rowKey="record => record.customer_id" 
-            :pagination="paginationConfig">
+            :pagination="paginationConfig" :scroll="{ y: table_height}">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'customer_id'">
                     {{ record.customer_id }}
@@ -94,6 +94,7 @@ const createFormData = reactive({ name: '', address: '', phone: '', label_ids: [
 const editFormData = reactive({ customer_id: '', name: '', address: '', phone: '', label_ids: [], comment: '' });
 const labelOptions = ref([]);
 const customerListFiltered = ref([]);
+const table_height = window.innerHeight * 0.55;
 
 const columns = [
     { title: '客户编号', dataIndex: 'customer_id', key: 'customer_id' },
