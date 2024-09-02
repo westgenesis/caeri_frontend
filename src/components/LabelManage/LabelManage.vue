@@ -215,7 +215,7 @@
   const labelGroupList = ref([]);
   const selectedLabelGroup = ref([]);
   const activeTab = ref("all");  // 新增选项卡的绑定状态
-  const table_height = window.innerHeight * 0.55;
+  const table_height = window.innerHeight * 0.5;
   
   watch(selectedLabelGroup, (newVal) => {
     fetchLabelList();

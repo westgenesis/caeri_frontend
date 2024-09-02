@@ -13,7 +13,7 @@
                 <template v-if="column.key === 'action'">
                     <a-button type="link" @click="showEditModal(record)">编辑</a-button>
                     <a-divider type="vertical" />
-                    <a-button type="link" @click="deleteUser(record.user_name)">删除</a-button>
+                    <a-button type="link" @click="deleteUser(record.user_id)">删除</a-button>
                 </template>
                 <template v-if="column.key === 'user_status'">
                     <a-tag>{{ record.user_status ? '启用' : '禁用' }}</a-tag>
@@ -200,7 +200,7 @@ export default {
             fetchUserList();
         };
 
-        const deleteUser = async (user_name) => {
+        const deleteUser = async (user_id) => {
             const confirmResult = await ElMessageBox.confirm(
                 '确定要删除该用户吗？',
                 '警告',
@@ -212,7 +212,7 @@ export default {
             );
 
             if (confirmResult) {
-                await http.post('/test/v1/users/delete_user', { name: user_name });
+                await http.post('/test/v1/users/delete_user', { user_id });
                 fetchUserList();
             }
         };
