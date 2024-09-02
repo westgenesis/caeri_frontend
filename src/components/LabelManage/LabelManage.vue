@@ -34,10 +34,12 @@
         </div>
         <div style="flex-grow: 1; padding-left: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <a-input-search v-model:value="searchText" placeholder="输入关键词" style="width: 200px" @search="fetchLabelList" />
+            <a-input-search v-model:value="searchText" placeholder="输入标签名称" style="width: 200px" @search="fetchLabelList" />
             <a-button type="primary" @click="showCreateModal">添加标签</a-button>
           </div>
-          <a-table :columns="columns" :dataSource="pagedLabelList" :rowKey="record => record.label_id" :pagination="paginationConfig" style="margin-top: 20px;" :scroll="{ y: table_height}">
+          <a-table :columns="columns" :dataSource="pagedLabelList" :rowKey="record => record.label_id" :pagination="paginationConfig" style="margin-top: 20px;" :scroll="{ y: table_height}"
+            :loading="loading"
+            >
             <template #bodyCell="{ column, record }">
               <template v-if="column.key === 'label_name'">
                 {{ record.label_name }}
@@ -206,7 +208,8 @@
   import { http } from '../../http';
   import { ElMessage, ElMessageBox } from 'element-plus';
   import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue';
-  
+
+  const loading = ref(false)
   const searchText = ref('');
   const labelList = ref([]);
   const labelGroupList = ref([]);
@@ -278,7 +281,9 @@ const fetchLabelList = async () => {
 
 const fetchLabelGroupList = async () => {
   const labelGroupType = activeTab.value === 'all' ? undefined : activeTab.value;
+  loading.value = true;
   const { data } = await http.post('/test/v1/labels/get_label_group_list', { label_group_type: labelGroupType });
+  loading.value = false;
   labelGroupList.value = data;
   if (labelGroupList.value.length > 0) {
     selectedLabelGroup.value = [labelGroupList.value[0].label_group_id];
@@ -413,7 +418,9 @@ const handleTabChange = (key) => {
   fetchLabelGroupList();
 };
 
-onMounted(() => {
+
+
+onMounted(async () => {
   fetchLabelGroupList();
 });
 

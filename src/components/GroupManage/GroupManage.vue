@@ -2,7 +2,7 @@
     <div style="margin: 20px;">
         <a-page-header title="组织管理" />
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <a-input-search v-model:value="searchText" placeholder="输入关键词" style="width: 200px"
+            <a-input-search v-model:value="searchText" placeholder="输入组织名称" style="width: 200px"
                 @search="fetchGroupList" />
             <a-button type="primary" @click="showCreateModal"> 添加分组 </a-button>
         </div>

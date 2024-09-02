@@ -4,11 +4,11 @@
       <a-tag v-for="label in selectedLabels" :key="label.label_id" closable @close="removeLabel(label)" :color="label.color">
         {{ label.label_name }}
       </a-tag>
-      <a-button type="dashed" style="margin-left: 8px;">+ 新建标签</a-button>
+      <a-button type="dashed" style="margin-left: 8px;">选择标签</a-button>
     </div>
   </a-form-item>
 
-  <a-modal title="选择标签" v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel" width="80%">
+  <a-modal title="选择标签" v-model:visible="modalVisible" @ok="handleOk" @cancel="handleCancel" width="80%" okText="确定" cancelText="取消">
     <div style="display: flex; flex-direction: column; height: 60vh;">
       <!-- 分割线上方的当前选中的标签 -->
        
