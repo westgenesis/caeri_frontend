@@ -41,7 +41,7 @@
                 </a-form-item>
                 <a-form-item label="权限" name="permission">
                     <a-tree checkable :treeData="menuPermissions" :defaultExpandedKeys="expandedKeys"
-                        :checkedKeys="editCheckedKeys" @check="onEditCheck" />
+                        :checkedKeys="editCheckedKeys" @check="onEditCheck"/>
                 </a-form-item>
             </a-form>
         </a-modal>
@@ -58,6 +58,7 @@ export const menuPermissions = [
         title: '工作台',
         key: '/home',
         children: [],
+        disableCheckbox: true // 禁用“工作台”节点的选择状态
     },
     {
         title: '系统管理',
@@ -101,9 +102,10 @@ export default {
         const editModalVisible = ref(false);
         const createFormData = reactive({ name: '', permission: '' });
         const editFormData = reactive({ role_id: '', name: '', permission: '' });
-        const createCheckedKeys = ref([]);
-        const editCheckedKeys = ref([]);
+        const createCheckedKeys = ref(['/home']); // 默认选中“工作台”节点
+        const editCheckedKeys = ref(['/home']); // 默认选中“工作台”节点
         const expandedKeys = ref(menuPermissions.map(item => item.key));
+        const isDisabled = ref({ '/home': true }); // 禁用“工作台”节点的选择状态
 
         const columns = [
             { title: '角色ID', dataIndex: 'role_id' },
@@ -144,7 +146,7 @@ export default {
         const showCreateModal = () => {
             createModalVisible.value = true;
             createFormData.name = '';
-            createCheckedKeys.value = [];
+            createCheckedKeys.value = ['/home']; // 默认选中“工作台”节点
         };
 
         const createRole = async () => {
@@ -166,9 +168,6 @@ export default {
                 createModalVisible.value = false;
                 fetchRoleList();
             })
-
-
-
         };
 
         const showEditModal = (record) => {
@@ -267,7 +266,8 @@ export default {
             onCreateCheck,
             onEditCheck,
             expandedKeys,
-            table_height
+            table_height,
+            isDisabled
         };
     },
 };

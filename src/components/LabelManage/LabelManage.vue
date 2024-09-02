@@ -316,6 +316,7 @@ const showEditModal = (record) => {
   editFormData.label_group_id = record.label_group_id;
   editFormData.color = record.color;
   editFormData.visual_range = record.visual_range;
+  editFormData.range = record.visual_range;
   editModalVisible.value = true;
 };
 
