@@ -41,7 +41,7 @@
 
         <a-modal title="新增客户" v-model:visible="createModalVisible" @ok="createCustomer" @cancel="handleCancel"
             okText="确定" cancelText="取消">
-            <a-form :form="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="createFormData" :rules="rules">
+            <a-form ref="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="createFormData" :rules="rules">
                 <a-form-item label="客户名称" name="name">
                     <a-input v-model:value="createFormData.name" />
                 </a-form-item>
@@ -53,14 +53,14 @@
                 </a-form-item>
                 <LabelSelector v-model="selectedLabels" label-group-type="client" />
                 <a-form-item label="备注" name="comment">
-                    <a-input v-model:value="createFormData.comment" />
+                    <a-input v-model:value="createFormData.comment" maxlength="128"/>
                 </a-form-item>
             </a-form>
         </a-modal>
 
         <a-modal title="编辑客户" v-model:visible="editModalVisible" @ok="updateCustomer" @cancel="handleCancel" okText="确定"
             cancelText="取消">
-            <a-form :form="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="editFormData" :rules="rules">
+            <a-form ref="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="editFormData" :rules="rules">
                 <a-form-item label="客户名称" name="name">
                     <a-input v-model:value="editFormData.name" />
                 </a-form-item>
@@ -72,7 +72,7 @@
                 </a-form-item>
                 <LabelSelector v-model="selectedLabels" label-group-type="client" />
                 <a-form-item label="备注" name="comment">
-                    <a-input v-model:value="editFormData.comment" />
+                    <a-input v-model:value="editFormData.comment" maxlength="128"/>
                 </a-form-item>
             </a-form>
         </a-modal>
@@ -95,6 +95,9 @@ const editFormData = reactive({ customer_id: '', name: '', address: '', phone: '
 const labelOptions = ref([]);
 const customerListFiltered = ref([]);
 const table_height = window.innerHeight * 0.55;
+
+const createForm = ref(null);
+const editForm = ref(null);
 
 const columns = [
     { title: '客户编号', dataIndex: 'customer_id', key: 'customer_id' },
@@ -145,11 +148,15 @@ const showCreateModal = () => {
     Object.assign(createFormData, { name: '', address: '', phone: '', label_ids: [], comment: '' });
 };
 
-const createCustomer = async () => {
-    createFormData.label_ids = selectedLabels.value.map(label => label.label_id);
-    await http.post('/test/v1/customers/create_customer', createFormData);
-    createModalVisible.value = false;
-    fetchCustomerList();
+const createCustomer = () => {
+    createForm.value.validate().then(async () => {
+        createFormData.label_ids = selectedLabels.value.map(label => label.label_id);
+        await http.post('/test/v1/customers/create_customer', createFormData);
+        createModalVisible.value = false;
+        fetchCustomerList();
+    }).catch(() => {
+        console.log('Validation failed');
+    });
 };
 
 const showEditModal = (record) => {
@@ -163,11 +170,15 @@ const showEditModal = (record) => {
     editModalVisible.value = true;
 };
 
-const updateCustomer = async () => {
-    editFormData.label_ids = selectedLabels.value.map(label => label.label_id);
-    await http.post('/test/v1/customers/update_customer', editFormData);
-    editModalVisible.value = false;
-    fetchCustomerList();
+const updateCustomer = () => {
+    editForm.value.validate().then(async () => {
+        editFormData.label_ids = selectedLabels.value.map(label => label.label_id);
+        await http.post('/test/v1/customers/update_customer', editFormData);
+        editModalVisible.value = false;
+        fetchCustomerList();
+    }).catch(() => {
+        console.log('Validation failed');
+    });
 };
 
 const deleteCustomer = async (customer_id) => {
@@ -192,6 +203,13 @@ const rules = {
             return Promise.resolve();
         } else {
             return Promise.reject('联系电话只能包含最多20位数字');
+        }
+    }, trigger: 'change' }],
+  name: [{ validator: (_, value) => {
+        if (!value || value.length <= 25) {
+            return Promise.resolve();
+        } else {
+            return Promise.reject('客户名称最多只能包含25个字符');
         }
     }, trigger: 'change' }],
 };
