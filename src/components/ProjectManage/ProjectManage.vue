@@ -108,6 +108,11 @@ const userList = ref([]);
 const customerList = ref([]);
 const fileList = ref([]);
 const table_height = window.innerHeight * 0.55;
+const recordMap = {
+    'low': '低',
+    'medium':'中',
+    'high': '高'
+}
 const columns = [
     { title: '项目ID', dataIndex: 'project_id' },
     { title: '项目名称', dataIndex: 'project_name' },
@@ -115,7 +120,7 @@ const columns = [
     { title: '项目经理', dataIndex: 'manager', customRender: ({ text }) => text.user_name },
     { title: '客户信息', dataIndex: 'customer', customRender: ({ text }) => text.name },
     { title: '项目计划周期', dataIndex: 'period', customRender: ({ record }) => `${record.period_start} ~ ${record.period_end}` },
-    { title: '项目优先级', dataIndex: 'priority' },
+    { title: '项目优先级', dataIndex: 'priority', customRender: ({ record}) => `${recordMap[record.priority]}`},
     { title: '创建时间', dataIndex: 'created_time' },
     { title: '创建者', dataIndex: 'creator' },
     { title: '项目描述', dataIndex: 'comment' },
@@ -186,9 +191,10 @@ const showEditModal = (record) => {
 const updateProject = async () => {
     const params = {
         ...editFormData,
-        period_start: editFormData.period[0],
-        period_end: editFormData.period[1],
+        period_start: editFormData.period_start,
+        period_end: editFormData.period_end,
     };
+    delete params.period;
 
     try {
         await http.post('/test/v1/projects/update_project', params);
@@ -204,7 +210,6 @@ const changePeriod = (v, strs) => {
     if (!strs?.length) {
         return;
     }
-    console.log(strs);
     editFormData.period_start = strs[0];
     editFormData.period_end = strs[1];
 }
