@@ -100,7 +100,7 @@ const columns = [
     { title: '序号', dataIndex: 'group_id', key: 'group_id' },
     { title: '分组名称', dataIndex: 'group_name', key: 'group_name' },
     { title: '上级组织ID', dataIndex: 'parent_group_id', key: 'parent_group_id' },
-    { title: '用户状态', dataIndex: 'user_status', key: 'user_status' },
+    { title: '组织状态', dataIndex: 'user_status', key: 'user_status' },
     { title: '创建时间', dataIndex: 'created_time', key: 'created_time' },
     { title: '组织成员', dataIndex: 'users', key: 'users' },
     {

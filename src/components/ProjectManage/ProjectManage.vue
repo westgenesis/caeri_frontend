@@ -9,7 +9,7 @@
         </div>
 
         <a-table :columns="columns" :dataSource="projectList" :rowKey="record => record.project_id"
-            :pagination="paginationConfig" :scroll="{ y: table_height}">
+            :scroll="{ y: table_height }">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'action'">
                     <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
@@ -20,7 +20,7 @@
 
         <!-- 编辑项目模态框 -->
         <a-drawer title="编辑项目" :visible="editDrawerVisible" @close="handleCancel" :width="600">
-            <a-form :form="editForm">
+            <a-form :form="editForm" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" labelAlign="left">
                 <a-form-item label="项目名称" name="project_name">
                     <a-input v-model:value="editFormData.project_name" />
                 </a-form-item>
@@ -32,17 +32,22 @@
                 </a-form-item>
                 <a-form-item label="项目经理" name="manager_id">
                     <a-select v-model:value="editFormData.manager_id">
-                        <a-select-option v-for="user in userList" :key="user.user_id" :value="user.user_id">{{ user.user_name }}</a-select-option>
+                        <a-select-option v-for="user in userList" :key="user.user_id" :value="user.user_id">{{
+                            user.user_name
+                            }}</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item label="项目成员" name="member_ids">
                     <a-select v-model:value="editFormData.member_ids" mode="multiple">
-                        <a-select-option v-for="user in userList" :key="user.user_id" :value="user.user_id">{{ user.user_name }}</a-select-option>
+                        <a-select-option v-for="user in userList" :key="user.user_id" :value="user.user_id">{{
+                            user.user_name
+                            }}</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item label="客户信息" name="customer_id">
                     <a-select v-model:value="editFormData.customer_id">
-                        <a-select-option v-for="customer in customerList" :key="customer.customer_id" :value="customer.customer_id">{{ customer.name }}</a-select-option>
+                        <a-select-option v-for="customer in customerList" :key="customer.customer_id"
+                            :value="customer.customer_id">{{ customer.name }}</a-select-option>
                     </a-select>
                 </a-form-item>
                 <a-form-item label="项目计划周期" name="period">
@@ -55,14 +60,25 @@
                         <a-radio-button value="low">低</a-radio-button>
                     </a-radio-group>
                 </a-form-item>
-                <a-form-item label="上传项目附件" name="files">
-                    <el-upload ref="uploadRef" :auto-upload="false" :on-change="onBeforeUpload" accept=".doc,.docx,.pdf,.xlsx,.png" v-model:file-list="fileList">
+                <a-form-item label="项目附件" name="files">
+                    <div v-for="file in fileList" :key="file">
+                        {{ file }}
+                        <a-button type="link" @click="downloadFile(file)">
+                            <DownloadOutlined />
+                        </a-button>
+                        <a-button type="link" class="ml-[1rem]" @click="deleteFile(file)">
+                            <DeleteOutlined />
+                        </a-button>
+                    </div>
+                    <el-upload ref="uploadRef" :auto-upload="false" :on-change="onBeforeUpload"
+                        accept=".doc,.docx,.pdf,.xlsx,.png">
                         <template #trigger>
                             <el-button>上传文件</el-button>
                         </template>
                     </el-upload>
                 </a-form-item>
             </a-form>
+
             <div class="flex justify-end">
                 <a-button type="primary" @click="updateProject">确定</a-button>
                 <a-button @click="handleCancel" style="margin-left: 1rem">取消</a-button>
@@ -77,53 +93,12 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { http } from '../../http';
 import { useRouter } from 'vue-router';
 import dayjs from 'dayjs';
+import { DownloadOutlined, DeleteOutlined} from '@ant-design/icons-vue';
+
 const router = useRouter();
 
 const searchText = ref('');
 const projectList = ref([
-    {
-        project_id: "6685hdjk76ad79fjald891",
-        project_name: "123",
-        period_start: "2024-07-16",
-        period_end: "2024-07-30",
-        priority: "low",
-        manager: {
-            user_id: "001",
-            user_name: "小王",
-            account: "10122",
-            passwd: "******",
-            email: "1012@qq.com",
-            user_status: true,
-            comment: "",
-            created_time: "2024-08-27T06:42:45",
-            user_role_id: "001"
-        },
-        members: [{
-            user_id: "002",
-            user_name: "小李",
-            account: "10123",
-            passwd: "******",
-            email: "10123@qq.com",
-            user_status: true,
-            comment: "",
-            created_time: "2024-08-27T06:42:45",
-            user_role_id: "001"
-        }],
-        customer: {
-            customer_id: "001",
-            name: "123",
-            address: "沙坪坝",
-            phone: "18716528181",
-            label_ids: [
-                "002"
-            ],
-            comment: "123"
-        },
-        file_list: ["文件1.pdf", "文件2.doc"],
-        created_time: '2024-08-15 19:00:00',
-        creator: "admin",
-        comment: "123"
-    }
 ]);
 const editDrawerVisible = ref(false);
 const createFormData = reactive({ project_name: '', project_number: '', comment: '', manager_id: '', member_ids: [], customer_id: '', period: [], priority: '', files: [] });
@@ -190,7 +165,7 @@ const toCreate = () => {
 }
 
 const fetchProjectList = async () => {
-    const { data } = await http.post('/test/v1/projects/get_projects_list', { name: searchText.value || undefined });
+    const data = await http.post('/test/v1/projects/get_projects_list', { name: searchText.value || undefined });
     projectList.value = data.data;
 };
 
@@ -205,6 +180,7 @@ const showEditModal = (record) => {
     editFormData.period = [dayjs(record.period_start), dayjs(record.period_end)];
     editFormData.priority = record.priority;
     editDrawerVisible.value = true;
+    fileList.value = record.file_list;
 };
 
 const updateProject = async () => {
@@ -255,6 +231,28 @@ const handleFileUpload = (event) => {
 
 const handleEditFileUpload = (event) => {
     editFormData.files = Array.from(event.target.files);
+};
+const downloadFile = (filename) => {
+    http.post(`/test/v1/projects/get_file`, {
+        project_id: editFormData.project_id,
+        filename:filename,
+    }, { responseType: 'blob' })
+        .then(response => {
+            const blob = new Blob([response], { type: 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+
+            // 移除下载链接
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            console.error('下载文件失败', error);
+        });
 };
 </script>
 

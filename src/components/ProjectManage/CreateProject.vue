@@ -1,7 +1,7 @@
 <template>
     <div style="margin: 1.25rem">
         <p>创建项目</p>
-        <a-form :form="createForm" layout="horizontal">
+        <a-form :form="createForm" layout="horizontal" :model="createFormData">
             <a-row :gutter="16">
                 <a-col :span="12">
                     <a-form-item label="项目名称" required>
@@ -50,7 +50,7 @@
             </a-row>
             <a-row :gutter="16">
                 <a-col :span="12">
-                    <a-form-item label="项目计划周期" name="period">
+                    <a-form-item label="项目计划周期" name="period" required>
                         <a-range-picker @change="changePeriod" v-model:value="createFormData.period" style="width: 16.5rem;" />
                     </a-form-item>
                 </a-col>
@@ -161,13 +161,17 @@ const createProject = async () => {
         return;
     }
 
+    if (!createFormData.period_end || !createFormData.period_start) {
+        ElMessage.error('请选择项目计划周期');
+        return;
+    }
     const params = {
         ...createFormData,
-        file_list: createFormData.file_list.map(x => x.name)
+        file_list: fileList.value.map(x => x.name)
     }
 
     try {
-        await http.post('/test/v1/projects/create_projects', createFormData);
+        await http.post('/test/v1/projects/create_projects', params);
         ElMessage.success('创建项目成功');
         router.push('/projectManage');
     } catch (error) {
@@ -186,13 +190,17 @@ onMounted(() => {
 
 const onBeforeUpload: UploadProps['onChange'] = async (file) => {
   const formData = new FormData();
-  const info = new Blob([
-    JSON.stringify({ category: 'knowledges' })
-  ]);
-  formData.append('user_file', file.raw as File);
-  formData.append('info', info);
-  createFormData.file_list = fileList;
-  await http.post(`/test/v1/upload_project_file`, formData);
+  
+  // 将 info 作为字符串附加到 FormData 中
+  formData.append('info', JSON.stringify({ category: 'knowledges' }));
+  
+  // 将文件附加到 FormData 中，使用后端期望的参数名 'file'
+  formData.append('file', file.raw);
+  try {
+    const response = await http.post(`/test/v1/projects/upload_project_file`, formData);
+  } catch (error) {
+    console.error("Upload failed: ", error);
+  }
 };
 </script>
 

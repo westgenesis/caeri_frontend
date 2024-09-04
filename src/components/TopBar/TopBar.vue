@@ -36,6 +36,9 @@ import { UserOutlined } from '@ant-design/icons-vue'
 const route = useRoute();
 const router = useRouter();
 const currentAccount = ref(localStorage.getItem('account'));
+watch(route, () => {
+    currentAccount.value = localStorage.getItem('account');
+});
 const isLoginOrRegistry = computed(() => {
     return route.path === '/login' || route.path === '/registry'
 })
@@ -44,9 +47,7 @@ const backToLogin = () => {
     router.push('/login');
 }
 
-watch(route, () => {
-    currentAccount.value = localStorage.getItem('account');
-});
+
 
 </script>
 
