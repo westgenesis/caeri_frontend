@@ -111,7 +111,6 @@ export default {
             { title: '角色ID', dataIndex: 'role_id' },
             { title: '角色名称', dataIndex: 'role_name' },
             { title: '角色状态', dataIndex: 'role_status', key: 'role_status' },
-            { title: '备注', dataIndex: 'comment' },
             { title: '创建时间', dataIndex: 'created_time' },
             {
                 title: '操作',

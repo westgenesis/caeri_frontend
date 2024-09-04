@@ -265,7 +265,12 @@ const deleteFile = (filename) => {
         project_id: editFormData.project_id,
         filename:filename,
     }).then(response => {
-        ElMessage.success('删除文件成功');
+        if (response.status === 'ok') {
+            ElMessage.success('删除文件成功');
+        } else {
+            ElMessage.success('删除文件失败');
+        }
+
     }).catch(error => {
         ElMessage.error('删除文件失败');
     });
