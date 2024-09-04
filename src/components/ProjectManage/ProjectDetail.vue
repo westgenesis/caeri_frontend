@@ -18,24 +18,31 @@
                 <a-col span="8">
                     <a-card title="项目负责人">
                         <div>
-                            <a-avatar style="color: #fde3cf; background-color: orangered" size="large">
-                                {{ projectDetail?.manager?.user_name }}
-                            </a-avatar>
+                            <a-tooltip :title="projectDetail?.manager?.user_name">
+                                <a-avatar style="color: #fde3cf; background-color: orangered" size="large">
+                                    {{ projectDetail?.manager?.user_name }}
+                                </a-avatar>
+                            </a-tooltip>
                         </div>
                     </a-card>
                 </a-col>
                 <a-col span="8">
                     <a-card title="客户信息">
-                        <a-avatar v-if="projectDetail?.customer?.name" style="color: yellow; background-color: yellowgreen" size="large">
+                        <a-tooltip :title="projectDetail?.customer?.name">
+                            <a-avatar v-if="projectDetail?.customer?.name" style="color: yellow; background-color: yellowgreen" size="large">
                                 {{ projectDetail?.customer?.name }}
                             </a-avatar>
+                        </a-tooltip>
                     </a-card>
                 </a-col>
                 <a-col span="8">
                     <a-card title="项目成员">
                         <a-avatar-group>
-                            <a-avatar style="color: #f56a00; background-color: #fde3cf" v-for="member in projectDetail.members" :key="member.user_id"
-                                >{{ member.user_name }}</a-avatar>
+                            <a-tooltip v-for="member in projectDetail.members" :key="member.user_id" :title="member.user_name">
+                                <a-avatar style="color: #f56a00; background-color: #fde3cf">
+                                    {{ member.user_name }}
+                                </a-avatar>
+                            </a-tooltip>
                         </a-avatar-group>
                     </a-card>
                 </a-col>
