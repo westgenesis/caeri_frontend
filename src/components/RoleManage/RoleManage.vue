@@ -15,7 +15,7 @@
                 </template>
                 <template v-if="column.key === 'action'">
                     <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
-                    <a-button type="link" size="small" @click="deleteRole(record.role_name)">删除</a-button>
+                    <a-button type="link" size="small" @click="deleteRole(record)">删除</a-button>
                 </template>
             </template>
         </a-table>
@@ -184,7 +184,7 @@ export default {
             fetchRoleList();
         };
 
-        const deleteRole = async (role_name) => {
+        const deleteRole = async (role) => {
             const confirmResult = await ElMessageBox.confirm(
                 '确定要删除该角色吗？',
                 '警告',
@@ -196,7 +196,7 @@ export default {
             );
 
             if (confirmResult) {
-                await http.post('/test/v1/users/delete_role', { name: role_name });
+                await http.post('/test/v1/users/delete_role', { role_id: role.role_id });
                 fetchRoleList();
             }
         };
