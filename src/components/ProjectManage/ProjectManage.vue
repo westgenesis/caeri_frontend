@@ -267,6 +267,7 @@ const deleteFile = (filename) => {
     }).then(response => {
         if (response.status === 'ok') {
             ElMessage.success('删除文件成功');
+            fileList.value = fileList.value.filter(file => file.filename !== filename);
         } else {
             ElMessage.success('删除文件失败');
         }
