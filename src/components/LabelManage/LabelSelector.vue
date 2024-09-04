@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted} from 'vue';
+import { ref, reactive, computed, watch, onMounted, watchEffect} from 'vue';
 import { http } from '../../http';
 
 const props = defineProps({
@@ -122,10 +122,9 @@ const removeLabel = (label) => {
   emit('update:modelValue', selectedLabels.value);
 };
 
-watch(props.modelValue, (newVal) => {
-  console.log(newVal);
-  selectedLabels.value = newVal
-})
+watchEffect(() => {
+  selectedLabels.value = [...props.modelValue];
+});
 
 watch(selectedLabelGroup, () => {
   fetchLabelList();

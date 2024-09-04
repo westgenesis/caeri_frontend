@@ -41,7 +41,8 @@
 
         <a-modal title="新增客户" v-model:visible="createModalVisible" @ok="createCustomer" @cancel="handleCancel"
             okText="确定" cancelText="取消">
-            <a-form ref="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="createFormData" :rules="rules">
+            <a-form ref="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left"
+                :model="createFormData" :rules="rules">
                 <a-form-item label="客户名称" name="name">
                     <a-input v-model:value="createFormData.name" />
                 </a-form-item>
@@ -51,16 +52,17 @@
                 <a-form-item label="联系电话" name="phone">
                     <a-input v-model:value="createFormData.phone" />
                 </a-form-item>
-                <LabelSelector v-model="selectedLabels" label-group-type="client" />
+                <LabelSelector ref="labelSelectorRef" v-model="selectedLabels" label-group-type="client" />
                 <a-form-item label="备注" name="comment">
-                    <a-input v-model:value="createFormData.comment" maxlength="128"/>
+                    <a-input v-model:value="createFormData.comment" maxlength="128" />
                 </a-form-item>
             </a-form>
         </a-modal>
 
         <a-modal title="编辑客户" v-model:visible="editModalVisible" @ok="updateCustomer" @cancel="handleCancel" okText="确定"
             cancelText="取消">
-            <a-form ref="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="editFormData" :rules="rules">
+            <a-form ref="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left"
+                :model="editFormData" :rules="rules">
                 <a-form-item label="客户名称" name="name">
                     <a-input v-model:value="editFormData.name" />
                 </a-form-item>
@@ -70,9 +72,9 @@
                 <a-form-item label="联系电话" name="phone">
                     <a-input v-model:value="editFormData.phone" />
                 </a-form-item>
-                <LabelSelector v-model="selectedLabels" label-group-type="client" />
+                <LabelSelector ref="labelSelectorRef" v-model="selectedLabels" label-group-type="client" />
                 <a-form-item label="备注" name="comment">
-                    <a-input v-model:value="editFormData.comment" maxlength="128"/>
+                    <a-input v-model:value="editFormData.comment" maxlength="128" />
                 </a-form-item>
             </a-form>
         </a-modal>
@@ -80,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted, computed, nextTick } from 'vue';
 import { http } from '../../http';
 import LabelSelector from '../LabelManage/LabelSelector.vue';
 
@@ -98,6 +100,7 @@ const table_height = window.innerHeight * 0.55;
 
 const createForm = ref(null);
 const editForm = ref(null);
+const labelSelectorRef = ref(null);
 
 const columns = [
     { title: '客户编号', dataIndex: 'customer_id', key: 'customer_id' },
@@ -166,7 +169,7 @@ const showEditModal = (record) => {
     editFormData.phone = record.phone;
     editFormData.comment = record.comment;
     // 设置 selectedLabels 为当前行的标签值
-    selectedLabels.value = [...record.labels];
+    selectedLabels.value = [...record.labels]
     editModalVisible.value = true;
 };
 
@@ -197,21 +200,25 @@ onMounted(() => {
 });
 
 const rules = {
-  phone: [{ validator: (_, value) => {
-        const phoneRegex = /^\d{1,20}$/;
-        if (!value || phoneRegex.test(value)) {
-            return Promise.resolve();
-        } else {
-            return Promise.reject('联系电话只能包含最多20位数字');
-        }
-    }, trigger: 'change' }],
-  name: [{ validator: (_, value) => {
-        if (!value || value.length <= 25) {
-            return Promise.resolve();
-        } else {
-            return Promise.reject('客户名称最多只能包含25个字符');
-        }
-    }, trigger: 'change' }],
+    phone: [{
+        validator: (_, value) => {
+            const phoneRegex = /^\d{1,20}$/;
+            if (!value || phoneRegex.test(value)) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject('联系电话只能包含最多20位数字');
+            }
+        }, trigger: 'change'
+    }],
+    name: [{
+        validator: (_, value) => {
+            if (!value || value.length <= 25) {
+                return Promise.resolve();
+            } else {
+                return Promise.reject('客户名称最多只能包含25个字符');
+            }
+        }, trigger: 'change'
+    }],
 };
 </script>
 
