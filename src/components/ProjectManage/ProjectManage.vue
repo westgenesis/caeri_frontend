@@ -15,6 +15,9 @@
                     <a-button type="link" size="small" @click="showEditModal(record)">编辑</a-button>
                     <a-button type="link" size="small" @click="deleteProject(record.project_id)">删除</a-button>
                 </template>
+                <template v-if="column.key === 'project_name'">
+                    <a-button type="link" size="small" @click="goToProjectDetail(record)">{{ record.project_name }}</a-button>
+                </template>
             </template>
         </a-table>
 
@@ -94,9 +97,9 @@ import { http } from '../../http';
 import { useRouter } from 'vue-router';
 import dayjs from 'dayjs';
 import { DownloadOutlined, DeleteOutlined} from '@ant-design/icons-vue';
-
+import { useProjectStore } from '../../stores/project';
 const router = useRouter();
-
+const projectStore = useProjectStore();
 const searchText = ref('');
 const projectList = ref([
 ]);
@@ -115,7 +118,7 @@ const recordMap = {
 }
 const columns = [
     { title: '项目ID', dataIndex: 'project_id' },
-    { title: '项目名称', dataIndex: 'project_name' },
+    { title: '项目名称', dataIndex: 'project_name', key: 'project_name'},
     { title: '项目编码', dataIndex: 'project_number' },
     { title: '项目经理', dataIndex: 'manager', customRender: ({ text }) => text.user_name },
     { title: '客户信息', dataIndex: 'customer', customRender: ({ text }) => text.name },
@@ -290,6 +293,13 @@ const onBeforeUpload = async (file) => {
   } catch (error) {
     console.error("Upload failed: ", error);
   }
+};
+
+const goToProjectDetail = (record) => {
+    projectStore.setProjectDetail(record);
+    router.push({
+        path: '/projectDetail'
+    });
 };
 </script>
 

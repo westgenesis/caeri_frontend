@@ -10,6 +10,7 @@ import LabelManage from '../components/LabelManage/LabelManage.vue';
 import CustomerManage from '../components/CustomerManage/CustomerManage.vue';
 import ProjectManage from '../components/ProjectManage/ProjectManage.vue';
 import CreateProject from '../components/ProjectManage/CreateProject.vue';
+import ProjectDetail from '../components/ProjectManage/ProjectDetail.vue';
 
 const routes = [
   {
@@ -83,6 +84,11 @@ const routes = [
     path: '/createProject',
     component: CreateProject,
     name: 'createProject'
+  },
+  {
+    path: '/projectDetail',
+    component: ProjectDetail,
+    name: 'projectDetail'
   }
 ];
 

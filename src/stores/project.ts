@@ -1,36 +1,18 @@
 // stores/project.ts
 import { defineStore } from 'pinia';
-import { http } from '../http';
 
 export const useProjectStore = defineStore('project', {
   state: () => ({
-    projects: JSON.parse(localStorage.getItem('projects') || '[]') || [],
-    currentProject: {
-      _id: {}
-    },
+    projectDetail: {} as Record<string, any>, // 初始化项目详情对象
   }),
   actions: {
-    updateProjects(projects) {
-      this.projects = projects;
-      localStorage.setItem('projects', JSON.stringify(projects));
+    // 设置项目详情
+    setProjectDetail(detail: Record<string, any>) {
+      this.projectDetail = detail;
     },
-    updateCurrentProject(project) {
-      this.currentProject = project;
+    // 获取项目详情
+    getProjectDetail(): Record<string, any> {
+      return this.projectDetail;
     },
-    updateCurrentProjectById(projectId) {
-      this.currentProject = this.projects.find(x => x._id.$oid === projectId);
-    },
-    async refreshProject(projectId) {
-      const result = await http.get(`/api/project_info/${projectId}`);
-      this.currentProject = result.project_data;
-    },
-    async refreshAllProjects() {
-      const result = await http.get('/api/display_user_projects', { })
-        .then(response => {
-            this.updateProjects(response.data);
-            return response.data;
-        });
-      return result;
-    }
   },
 });
