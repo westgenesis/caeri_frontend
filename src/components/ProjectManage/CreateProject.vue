@@ -11,8 +11,8 @@
 
                 <a-col :span="12">
                     <a-form-item label="项目经理" required>
-                        <a-select v-model:value="createFormData.manager_id" style="width: 16.5rem;">
-                            <a-select-option v-for="user in userList" :key="user.user_id" :value="user.user_id">{{
+                        <a-select v-model:value="createFormData.manager_id" style="width: 16.5rem;" show-search :filter-option="filterOption">
+                            <a-select-option v-for="user in userList" :key="user.user_name" :value="user.user_id">{{
                                 user.user_name }}</a-select-option>
                         </a-select>
                     </a-form-item>
@@ -33,8 +33,8 @@
             <a-row :gutter="16">
                 <a-col :span="12">
                     <a-form-item label="项目成员" name="member_ids">
-                        <a-select v-model:value="createFormData.member_ids" mode="multiple" style="width: 16.5rem;">
-                            <a-select-option v-for="user in userList" :key="user.user_id" :value="user.user_id">{{
+                        <a-select v-model:value="createFormData.member_ids" mode="multiple" style="width: 16.5rem;" show-search :filter-option="filterOption">
+                            <a-select-option v-for="user in userList" :key="user.user_name" :value="user.user_id">{{
                                 user.user_name }}</a-select-option>
                         </a-select>
                     </a-form-item>
@@ -113,7 +113,9 @@ const createFormData = reactive({
 const userList = ref([]);
 const customerList = ref([]);
 const fileList = ref([]);
-
+const filterOption = (input: string, option: any) => {
+  return option.key.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+};
 const fetchUserList = async () => {
     try {
         const response = await http.post('/test/v1/users/get_user_list', {});

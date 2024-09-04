@@ -259,6 +259,32 @@ const downloadFile = (filename) => {
             console.error('下载文件失败', error);
         });
 };
+
+const deleteFile = (filename) => {
+    http.post('/test/v1/projects/delete_project_file', {
+        project_id: editFormData.project_id,
+        filename:filename,
+    }).then(response => {
+        ElMessage.success('删除文件成功');
+    }).catch(error => {
+        ElMessage.error('删除文件失败');
+    });
+}
+
+const onBeforeUpload = async (file) => {
+  const formData = new FormData();
+  
+  // 将 info 作为字符串附加到 FormData 中
+  formData.append('info', JSON.stringify({ category: 'knowledges_update', project_id: editFormData.project_id}));
+  
+  // 将文件附加到 FormData 中，使用后端期望的参数名 'file'
+  formData.append('file', file.raw);
+  try {
+    const response = await http.post(`/test/v1/projects/upload_project_file`, formData);
+  } catch (error) {
+    console.error("Upload failed: ", error);
+  }
+};
 </script>
 
 <style scoped>
