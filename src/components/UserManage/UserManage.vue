@@ -23,7 +23,7 @@
 
         <a-modal title="新增用户" v-model:visible="createModalVisible" @ok="createUser" @cancel="handleCancel" okText="确定"
             cancelText="取消">
-            <a-form :form="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
+            <a-form ref="createForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="createFormData" :rules="rules">
                 <a-form-item label="用户名" name="name">
                     <a-input v-model:value="createFormData.name" />
                 </a-form-item>
@@ -47,7 +47,7 @@
 
         <a-modal title="编辑用户" v-model:visible="editModalVisible" @ok="updateUser" @cancel="handleCancel" okText="确定"
             cancelText="取消">
-            <a-form :form="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left">
+            <a-form ref="editForm" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }" labelAlign="left" :model="editFormData" :rules="rules">
                 <a-form-item label="用户名" name="name">
                     <a-input v-model:value="editFormData.name" />
                 </a-form-item>
@@ -76,12 +76,13 @@ import { ref, reactive, onMounted } from 'vue';
 import { http } from '../../http';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
-
 const searchText = ref('');
 const userList = ref([]);
 const createModalVisible = ref(false);
 const editModalVisible = ref(false);
 const rolesOptions = ref([]);
+const createForm = ref(null);
+const editForm = ref(null);
 const createFormData = reactive({ name: '', account: '', passwd: '', email: '', user_role_id: '', comment: '' });
 const editFormData = reactive({ user_id: '', name: '', account: '', passwd: '', email: '', user_role_id: '', comment: '' });
 
@@ -136,7 +137,7 @@ const showCreateModal = () => {
     createFormData.comment = '';
 };
 
-const createUser = async () => {
+const createUser = () => {
     if (!createFormData.name) {
         ElMessage.error('请填写用户名');
         return;
@@ -157,9 +158,11 @@ const createUser = async () => {
         ElMessage.error('请选择角色');
         return;
     }
-    await http.post('/test/v1/users/create_user', createFormData);
-    createModalVisible.value = false;
-    fetchUserList();
+    createForm.value.validate().then(async () => {
+        await http.post('/test/v1/users/create_user', createFormData);
+        createModalVisible.value = false;
+        fetchUserList();
+    })
 };
 
 const showEditModal = (record) => {
@@ -173,7 +176,7 @@ const showEditModal = (record) => {
     editModalVisible.value = true;
 };
 
-const updateUser = async () => {
+const updateUser = () => {
     if (!editFormData.name) {
         ElMessage.error('请填写用户名');
         return;
@@ -194,9 +197,11 @@ const updateUser = async () => {
         ElMessage.error('请选择角色');
         return;
     }
-    await http.post('/test/v1/users/update_user', editFormData);
-    editModalVisible.value = false;
-    fetchUserList();
+    editForm.value.validate().then(async () => {
+        await http.post('/test/v1/users/update_user', editFormData);
+        editModalVisible.value = false;
+        fetchUserList();
+    })
 };
 
 const deleteUser = async (user_id) => {
@@ -222,6 +227,17 @@ const handleCancel = () => {
 };
 
 const table_height = window.innerHeight * 0.55;
+
+const rules = {
+  email: [{ validator: (_, value) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{1,}$/;
+        if (!value || (value.length <= 30 && emailRegex.test(value))) {
+            return Promise.resolve();
+        } else {
+            return Promise.reject('电子邮件格式不正确或超过30位');
+        }
+    }, trigger: 'change' }],
+};
 </script>
 
 <style scoped></style>
