@@ -33,6 +33,7 @@ const onSubmitFormData = async () => {
       }
       if (res?.user) {
         window.localStorage.setItem('user_role_id', res?.user.user_role_id)
+        window.localStorage.setItem('user_id', res?.user.user_id)
       }
       router.replace('/home');
     } else {
