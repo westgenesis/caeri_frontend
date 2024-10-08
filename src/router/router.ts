@@ -11,6 +11,7 @@ import CustomerManage from '../components/CustomerManage/CustomerManage.vue';
 import ProjectManage from '../components/ProjectManage/ProjectManage.vue';
 import CreateProject from '../components/ProjectManage/CreateProject.vue';
 import ProjectDetail from '../components/ProjectManage/ProjectDetail.vue';
+import SampleManage from '../components/SampleManage/SampleManage.vue';
 
 const routes = [
   {
@@ -73,6 +74,14 @@ const routes = [
     name: 'LabelManage',
     meta: {
       breadcrumb: ['标签管理', '标签库']
+    }
+  },
+  {
+    path: '/sampleManage',
+    component: SampleManage,
+    name: 'SampleManage',
+    meta: {
+      breadcrumb: ['样品管理', '样品信息']
     }
   },
   {

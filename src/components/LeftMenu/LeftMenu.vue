@@ -41,6 +41,9 @@ const items: ItemType[] = [
   getItem('标签管理', '/labelManage', () => h(SnippetsOutlined), [
     getItem('标签库', '/labelManage'),
   ]),
+  getItem('样品管理', '/sampleManage', () => h(SnippetsOutlined), [
+    getItem('样品信息', '/sampleManage'),
+  ]),
 ];
 
 const filteredItems = ref([...items]);  // 使用深拷贝来初始化

@@ -37,4 +37,12 @@ import TopBar from './components/TopBar/TopBar.vue';
   display: flex;
   flex-direction: column;
 }
+
+
+</style>
+
+<style>
+.el-upload__input {
+  display: none !important;
+}
 </style>
