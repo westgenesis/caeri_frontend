@@ -40,35 +40,38 @@
                     <a-form-item label="生产单位" name="producer">
                         <a-input v-model:value="createFormData.producer" />
                     </a-form-item>
-                    <a-form-item label="获取时间" name="get_time">
-                        <a-date-picker v-model:value="createFormData.get_time" @change="createChangeGetTime"/>
+                    <a-form-item label="送样日期" name="get_time">
+                        <a-date-picker v-model:value="createFormData.get_time" @change="createChangeGetTime" />
                     </a-form-item>
-                    <a-form-item label="获取记录" name="get_record">
+                    <a-form-item label="送样记录" name="get_record">
                         <a-input v-model:value="createFormData.get_record" />
-                    </a-form-item>
-                    <a-form-item label="样品状态" name="sample_status">
-                        <a-input v-model:value="createFormData.sample_status" />
                     </a-form-item>
                     <a-form-item label="样品描述" name="sample_description">
                         <a-textarea v-model:value="createFormData.sample_description" />
                     </a-form-item>
-                    <a-form-item label="Logo ID" name="logo_id">
-                        <a-input v-model:value="createFormData.logo_id" />
+                    <a-form-item label="样品商标" name="logo_url">
+                        <el-upload ref="uploadRef" v-model:file-list="createFormData.logo_list" :auto-upload="false"
+                            :on-change="onBeforeUploadLogo" accept=".jpg,.png" listType="picture-card"
+                            :on-preview="handlePictureCardPreview" limit="1">
+                            <template #trigger>
+                                <div>
+                                    <plus-outlined />
+                                    <div style="margin-top: 8px">Upload</div>
+                                </div>
+                            </template>
+                        </el-upload>
                     </a-form-item>
-                    <a-form-item label="图片列表" name="pic_list">
-                        <el-upload ref="uploadRef" 
-                        v-model:file-list="createFormData.pic_list"
-                        :auto-upload="false" :on-change="onBeforeUpload"
-                        accept=".jpg,.png"
-                        listType="picture-card"
-                        >
-                        <template #trigger>
-                            <div>
-                                <plus-outlined />
-                                <div style="margin-top: 8px">Upload</div>
-                            </div>
-                        </template>
-                    </el-upload>
+                    <a-form-item label="上传样品图片" name="pic_list">
+                        <el-upload ref="uploadRef" v-model:file-list="createFormData.pic_list" :auto-upload="false"
+                            :on-change="onBeforeUpload" accept=".jpg,.png" listType="picture-card"
+                            :on-preview="handlePictureCardPreview">
+                            <template #trigger>
+                                <div>
+                                    <plus-outlined />
+                                    <div style="margin-top: 8px">Upload</div>
+                                </div>
+                            </template>
+                        </el-upload>
                     </a-form-item>
                     <LabelSelector v-model="selectedLabels" label-group-type="client" />
                     <a-form-item label="备注" name="remark">
@@ -112,21 +115,30 @@
                     <a-form-item label="样品描述" name="sample_description">
                         <a-textarea v-model:value="editFormData.sample_description" />
                     </a-form-item>
-                    <a-form-item label="Logo ID" name="logo_id">
-                        <a-input v-model:value="editFormData.logo_id" />
+                    <a-form-item label="样品商标" name="logo_url">
+                        <el-upload ref="uploadRef" v-model:file-list="editFormData.logo_list" :auto-upload="false"
+                            :on-change="onBeforeUploadLogo" accept=".jpg,.png" listType="picture-card"
+                            :on-preview="handlePictureCardPreview">
+                            <template #trigger>
+                                <div>
+                                    <plus-outlined />
+                                    <div style="margin-top: 8px">Upload</div>
+                                </div>
+                            </template>
+                        </el-upload>
                     </a-form-item>
                     <a-form-item label="图片列表" name="pic_list">
 
-                    <el-upload ref="uploadRef" :auto-upload="false" :on-change="onBeforeUpload"
-                        accept=".doc,.docx,.pdf,.xlsx,.png"
-                        v-model:file-list="fileList"    
-                    >
-                        <template #trigger>
-                            <el-button>
-                                上传文件
-                            </el-button>
-                        </template>
-                    </el-upload>
+                        <el-upload ref="uploadRef" v-model:file-list="editFormData.pic_list" :auto-upload="false"
+                            :on-change="onBeforeUpload" accept=".jpg,.png" listType="picture-card"
+                            :on-preview="handlePictureCardPreview">
+                            <template #trigger>
+                                <div>
+                                    <plus-outlined />
+                                    <div style="margin-top: 8px">Upload</div>
+                                </div>
+                            </template>
+                        </el-upload>
                     </a-form-item>
                     <LabelSelector v-model="selectedLabels" label-group-type="client" />
                     <a-form-item label="备注" name="remark">
@@ -136,6 +148,9 @@
             </a-form>
         </a-modal>
     </div>
+    <el-dialog v-model="dialogVisible">
+        <img w-full :src="dialogImageUrl" alt="Preview Image" />
+    </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -144,6 +159,8 @@ import { http } from '../../http';
 import { ElMessage, ElMessageBox, UploadProps } from 'element-plus';
 import LabelSelector from '../LabelManage/LabelSelector.vue';
 
+const dialogImageUrl = ref('')
+const dialogVisible = ref(false)
 const searchText = ref('');
 const sampleList = ref([]);
 const createModalVisible = ref(false);
@@ -151,7 +168,10 @@ const editModalVisible = ref(false);
 const createForm = ref(null);
 const editForm = ref(null);
 const selectedLabels = ref([]);
+const logo_url = ref('');
+const picture_urls = ref([]);
 const fileList = ref([]);
+const currentLogo = ref({});
 const createFormData = reactive({
     sample_name: '',
     sample_id: '',
@@ -165,12 +185,13 @@ const createFormData = reactive({
     return_record: '',
     sample_status: '',
     sample_description: '',
-    logo_id: '',
+    logo_list: [],
     pic_list: [],
     label_list: [],
     get_time_str: '',
     return_time_str: '',
 });
+
 const editFormData = reactive({
     sample_name: '',
     old_sample_id: '',
@@ -185,7 +206,7 @@ const editFormData = reactive({
     return_record: '',
     sample_status: '',
     sample_description: '',
-    logo_id: '',
+    logo_list: [],
     pic_list: [],
     label_list: [],
     get_time_str: '',
@@ -247,7 +268,7 @@ const showCreateModal = () => {
     createFormData.return_record = '';
     createFormData.sample_status = '';
     createFormData.sample_description = '';
-    createFormData.logo_id = '';
+    createFormData.logo_list = [];
     createFormData.pic_list = [];
 };
 
@@ -257,8 +278,13 @@ const createSample = () => {
         return;
     }
     console.log(createFormData);
+    
     createForm.value.validate().then(async () => {
-        await http.post('/test/v1/samples/create_sample', createFormData);
+        await http.post('/test/v1/samples/create_sample', {
+            ...createFormData,
+            logo_url: logo_url.value,
+            pic_list: picture_urls.value,
+        });
         createModalVisible.value = false;
         fetchSampleList();
     });
@@ -279,7 +305,7 @@ const showEditModal = (record) => {
     editFormData.return_record = record.return_record;
     editFormData.sample_status = record.sample_status;
     editFormData.sample_description = record.sample_description;
-    editFormData.logo_id = record.logo_id;
+    editFormData.logo_list = record.logo_list;
     editFormData.pic_list = record.pic_list;
     editModalVisible.value = true;
 };
@@ -290,7 +316,7 @@ const updateSample = () => {
         return;
     }
     editForm.value.validate().then(async () => {
-        const params = {...editFormData}
+        const params = { ...editFormData }
         if (params.old_sample_id === params.new_sample_id) {
             delete params.new_sample_id
         }
@@ -329,19 +355,51 @@ const rules = {
 };
 
 const onBeforeUpload: UploadProps['onChange'] = async (file) => {
-  const formData = new FormData();
-  
-  // 将 info 作为字符串附加到 FormData 中
-  formData.append('info', JSON.stringify({ category: 'picture' }));
-  
-  // 将文件附加到 FormData 中，使用后端期望的参数名 'file'
-  formData.append('pic', file.raw);
-  try {
-    const response = await http.post(`/test/v1/samples/upload_sample_pic`, formData);
-  } catch (error) {
-    console.error("Upload failed: ", error);
-  }
+    const formData = new FormData();
+
+    // 将 info 作为字符串附加到 FormData 中
+    formData.append('info', JSON.stringify({ category: 'picture' }));
+
+    // 将文件附加到 FormData 中，使用后端期望的参数名 'file'
+    formData.append('pic', file.raw);
+    console.log(file)
+    try {
+        const response = await http.post(`/test/v1/samples/upload_sample_pic`, formData);
+        if (response.picture_url) {
+            picture_urls.value.push(response.picture_url)
+        }
+    } catch (error) {
+        console.error("Upload failed: ", error);
+    }
 };
+
+const onBeforeUploadLogo = async (file) => {
+    if (createFormData.logo_list?.length >= 1) {
+        ElMessage.error('只能上传一张logo');
+        return;
+    }
+    const formData = new FormData();
+
+    // 将 info 作为字符串附加到 FormData 中
+    formData.append('info', JSON.stringify({ category: 'logo' }));
+
+    // 将文件附加到 FormData 中，使用后端期望的参数名 'file'
+    formData.append('pic', file.raw);
+    try {
+        const response = await http.post(`/test/v1/samples/upload_sample_pic`, formData);
+        console.log(response.picture_url)
+        if (response.picture_url) {
+            logo_url.value = response.picture_url
+        }
+    } catch (error) {
+        console.error("Upload failed: ", error);
+    }
+}
+
+const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
+    dialogImageUrl.value = uploadFile.url!
+    dialogVisible.value = true
+}
 </script>
 
 <style scoped>
