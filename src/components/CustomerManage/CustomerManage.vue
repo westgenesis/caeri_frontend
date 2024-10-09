@@ -52,7 +52,7 @@
                 <a-form-item label="联系电话" name="phone">
                     <a-input v-model:value="createFormData.phone" />
                 </a-form-item>
-                <LabelSelector ref="labelSelectorRef" v-model="selectedLabels" label-group-type="client" />
+                <LabelSelector  v-model="selectedLabels" label-group-type="client" />
                 <a-form-item label="备注" name="comment">
                     <a-input v-model:value="createFormData.comment" maxlength="128" />
                 </a-form-item>
@@ -72,7 +72,7 @@
                 <a-form-item label="联系电话" name="phone">
                     <a-input v-model:value="editFormData.phone" />
                 </a-form-item>
-                <LabelSelector ref="labelSelectorRef" v-model="selectedLabels" label-group-type="client" />
+                <LabelSelector v-model="selectedLabels" label-group-type="client" />
                 <a-form-item label="备注" name="comment">
                     <a-input v-model:value="editFormData.comment" maxlength="128" />
                 </a-form-item>
@@ -100,7 +100,6 @@ const table_height = window.innerHeight * 0.55;
 
 const createForm = ref(null);
 const editForm = ref(null);
-const labelSelectorRef = ref(null);
 
 const columns = [
     { title: '客户编号', dataIndex: 'customer_id', key: 'customer_id' },

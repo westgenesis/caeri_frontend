@@ -74,9 +74,6 @@
                         </el-upload>
                     </a-form-item>
                     <LabelSelector v-model="selectedLabels" label-group-type="client" />
-                    <a-form-item label="备注" name="remark">
-                        <a-textarea v-model:value="createFormData.remark" />
-                    </a-form-item>
                 </div>
             </a-form>
         </a-modal>
@@ -109,16 +106,13 @@
                     <a-form-item label="获取记录" name="get_record">
                         <a-input v-model:value="editFormData.get_record" />
                     </a-form-item>
-                    <a-form-item label="样品状态" name="sample_status">
-                        <a-input v-model:value="editFormData.sample_status" />
-                    </a-form-item>
                     <a-form-item label="样品描述" name="sample_description">
                         <a-textarea v-model:value="editFormData.sample_description" />
                     </a-form-item>
                     <a-form-item label="样品商标" name="logo_url">
                         <el-upload ref="uploadRef" v-model:file-list="editFormData.logo_list" :auto-upload="false"
                             :on-change="onBeforeUploadLogo" accept=".jpg,.png" listType="picture-card"
-                            :on-preview="handlePictureCardPreview">
+                            :on-preview="handlePictureCardPreview" limit="1">
                             <template #trigger>
                                 <div>
                                     <plus-outlined />
@@ -140,10 +134,7 @@
                             </template>
                         </el-upload>
                     </a-form-item>
-                    <LabelSelector v-model="selectedLabels" label-group-type="client" />
-                    <a-form-item label="备注" name="remark">
-                        <a-textarea v-model:value="editFormData.remark" />
-                    </a-form-item>
+                    <LabelSelector v-model="selectedLabels" label-group-type="sample" />
                 </div>
             </a-form>
         </a-modal>
@@ -158,7 +149,9 @@ import { ref, reactive, onMounted } from 'vue';
 import { http } from '../../http';
 import { ElMessage, ElMessageBox, UploadProps } from 'element-plus';
 import LabelSelector from '../LabelManage/LabelSelector.vue';
-
+import dayjs from 'dayjs';
+const baseURL = import.meta.env.VITE_API_BASE_URL || '';
+console.log(baseURL)
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 const searchText = ref('');
@@ -224,7 +217,14 @@ const createChangeReturnTime = (e, str) => {
 const columns = [
     { title: '样品编号', dataIndex: 'sample_id' },
     { title: '样品名称', dataIndex: 'sample_name' },
-    { title: '创建者', dataIndex: 'creator' },
+    { title: '规格型号', dataIndex: 'specificate_model' },
+    { title: '样品数量', dataIndex: 'sample_sum' },
+    { title: '委托方', dataIndex: 'mandator' },
+    { title: '生产厂商', dataIndex: 'producer' },
+    { title: '获取时间', dataIndex: 'get_time' },
+    { title: '获取记录', dataIndex: 'get_record' },
+    { title: '归还时间', dataIndex: 'return_time' },
+    { title: '归还记录', dataIndex: 'return_record' },
     {
         title: '操作',
         key: 'action',
@@ -266,10 +266,44 @@ const showCreateModal = () => {
     createFormData.get_record = '';
     createFormData.return_time = '';
     createFormData.return_record = '';
-    createFormData.sample_status = '';
     createFormData.sample_description = '';
     createFormData.logo_list = [];
     createFormData.pic_list = [];
+};
+
+
+
+const showEditModal = (record) => {
+    selectedLabels.value = [...(record.labels || [])]
+    record.pic_list = record.pic_list || [];
+    editFormData.sample_name = record.sample_name;
+    editFormData.old_sample_id = record.sample_id;
+    editFormData.new_sample_id = record.sample_id;
+    editFormData.specificate_model = record.specificate_model;
+    editFormData.sample_sum = record.sample_sum;
+    editFormData.mandator = record.mandator;
+    editFormData.producer = record.producer;
+    editFormData.get_time = dayjs(record.get_time || '2000-01-01');
+    editFormData.get_record = record.get_record;
+    editFormData.sample_status = record.sample_status;
+    editFormData.sample_description = record.sample_description;
+    logo_url.value = record.logo_url;
+
+    editFormData.logo_list = [{
+        name: baseURL + record.logo_url,
+        url: baseURL + record.logo_url
+    }];
+    if (record.logo_url) {
+        logo_url.value = baseURL + record.logo_url;
+    }
+    editFormData.pic_list = (record.pic_list || []).map(x => {
+        return {
+            name: baseURL + x,
+            url: baseURL + x,
+        }
+    });
+    picture_urls.value = record.pic_list || [];
+    editModalVisible.value = true;
 };
 
 const createSample = () => {
@@ -277,9 +311,9 @@ const createSample = () => {
         ElMessage.error('请填写样品名称');
         return;
     }
-    console.log(createFormData);
     
     createForm.value.validate().then(async () => {
+        createFormData.label_list = selectedLabels.value.map(label => label.label_id);
         await http.post('/test/v1/samples/create_sample', {
             ...createFormData,
             logo_url: logo_url.value,
@@ -288,26 +322,6 @@ const createSample = () => {
         createModalVisible.value = false;
         fetchSampleList();
     });
-};
-
-const showEditModal = (record) => {
-    selectedLabels.value = [...record.labels]
-    editFormData.sample_name = record.sample_name;
-    editFormData.old_sample_id = record.sample_id;
-    editFormData.new_sample_id = record.sample_id;
-    editFormData.specificate_model = record.specificate_model;
-    editFormData.sample_sum = record.sample_sum;
-    editFormData.mandator = record.mandator;
-    editFormData.producer = record.producer;
-    editFormData.get_time = record.get_time;
-    editFormData.get_record = record.get_record;
-    editFormData.return_time = record.return_time;
-    editFormData.return_record = record.return_record;
-    editFormData.sample_status = record.sample_status;
-    editFormData.sample_description = record.sample_description;
-    editFormData.logo_list = record.logo_list;
-    editFormData.pic_list = record.pic_list;
-    editModalVisible.value = true;
 };
 
 const updateSample = () => {
@@ -320,7 +334,11 @@ const updateSample = () => {
         if (params.old_sample_id === params.new_sample_id) {
             delete params.new_sample_id
         }
-        await http.post('/test/v1/samples/update_sample', editFormData);
+        await http.post('/test/v1/samples/update_sample', { ...params, 
+            logo_url: (logo_url.value || '').replace('/dev-api', ''),
+            pic_list: (picture_urls.value || []).map(x => { return (x || '').replace('/dev-api', '')}),
+            label_list: selectedLabels.value.map(label => label.label_id)
+        });
         editModalVisible.value = false;
         fetchSampleList();
     });

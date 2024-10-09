@@ -12,6 +12,7 @@ import ProjectManage from '../components/ProjectManage/ProjectManage.vue';
 import CreateProject from '../components/ProjectManage/CreateProject.vue';
 import ProjectDetail from '../components/ProjectManage/ProjectDetail.vue';
 import SampleManage from '../components/SampleManage/SampleManage.vue';
+import ToolManage from '../components/ToolManage/ToolManage.vue';
 
 const routes = [
   {
@@ -98,6 +99,10 @@ const routes = [
     path: '/projectDetail',
     component: ProjectDetail,
     name: 'projectDetail'
+  },
+  {
+    path: '/toolManage',
+    component: ToolManage,
   }
 ];
 
