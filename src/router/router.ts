@@ -13,6 +13,8 @@ import CreateProject from '../components/ProjectManage/CreateProject.vue';
 import ProjectDetail from '../components/ProjectManage/ProjectDetail.vue';
 import SampleManage from '../components/SampleManage/SampleManage.vue';
 import ToolManage from '../components/ToolManage/ToolManage.vue';
+import BugTypeManage from '../components/BugManage/BugTypeManage.vue';
+import BugManage from '../components/BugManage/BugManage.vue';
 
 const routes = [
   {
@@ -103,6 +105,20 @@ const routes = [
   {
     path: '/toolManage',
     component: ToolManage,
+  }, {
+    path: '/bugTypeManage',
+    component: BugTypeManage,
+    name: 'BugTypeManage',
+    meta: {
+      breadcrumb: ['系统管理', 'Bug类型管理']
+    }
+  }, {
+    path: '/bugManage',
+    component: BugManage,
+    name: 'BugManage',
+    meta: {
+      breadcrumb: ['Bug管理', 'Bug信息']
+    }
   }
 ];
 

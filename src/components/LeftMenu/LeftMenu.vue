@@ -6,11 +6,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, h } from 'vue';
 import type { MenuProps, ItemType } from 'ant-design-vue';
-import { HomeOutlined, SettingOutlined, SnippetsOutlined, ProjectOutlined} from '@ant-design/icons-vue';
+import { HomeOutlined, SettingOutlined, SnippetsOutlined, ProjectOutlined, ToolOutlined, GoldOutlined, BugOutlined} from '@ant-design/icons-vue';
 import { getItem } from './menu.ts';
 import { http } from '../../http'
 
@@ -41,8 +41,15 @@ const items: ItemType[] = [
   getItem('标签管理', '/labelManage', () => h(SnippetsOutlined), [
     getItem('标签库', '/labelManage'),
   ]),
-  getItem('样品管理', '/sampleManage', () => h(SnippetsOutlined), [
+  getItem('样品管理', '/sampleManage', () => h(GoldOutlined), [
     getItem('样品信息', '/sampleManage'),
+  ]),
+  getItem('工具管理', '/toolManage', () => h(ToolOutlined), [
+    getItem('工具管理', '/toolManage'),
+  ]),
+  getItem('漏洞管理', '/bugTypeManage', () => h(BugOutlined), [
+    getItem('漏洞类型管理', '/bugTypeManage'),
+    getItem('漏洞库', '/bugManage')
   ]),
 ];
 
@@ -75,12 +82,25 @@ const updateFilteredItems = async () => {
   }
 };
 
-onMounted(updateFilteredItems);
+onMounted(async () => {
+  await updateFilteredItems();
+  window.addEventListener('hashchange', handleHashChange);
+  handleHashChange();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('hashchange', handleHashChange);
+});
 
 watch(() => route.path, updateFilteredItems);
 
 const handleClick: MenuProps['onClick'] = e => {
   router.replace(e.key);
+};
+
+const handleHashChange = () => {
+  const hash = window.location.hash.replace('#', '');
+  selectedKeys.value = [hash];
 };
 
 </script>

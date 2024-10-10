@@ -14,6 +14,10 @@
                     <a-button type="link" @click="showEditModal(record)">编辑</a-button>
                     <a-divider type="vertical" />
                     <a-button type="link" @click="deleteSample(record.sample_id)">删除</a-button>
+                    <a-divider type="vertical" />
+                    <a-button type="link" @click="showReturnModal(record)">还样</a-button>
+                    <a-divider type="vertical" />
+                    <a-button type="link" @click="showReturnRecordsModal(record)">还样记录</a-button>
                 </template>
             </template>
         </a-table>
@@ -73,7 +77,7 @@
                             </template>
                         </el-upload>
                     </a-form-item>
-                    <LabelSelector v-model="selectedLabels" label-group-type="client" />
+                    <LabelSelector v-model="selectedLabels" label-group-type="sample" />
                 </div>
             </a-form>
         </a-modal>
@@ -138,7 +142,25 @@
                 </div>
             </a-form>
         </a-modal>
+
+        <a-modal title="还样" v-model:visible="returnModalVisible" @ok="handleReturnSample" @cancel="handleCancel"
+            okText="确定" cancelText="取消" width="40%">
+            <a-form ref="returnForm" :model="returnFormData" :rules="returnRules">
+                <a-form-item label="还样日期" name="return_time">
+                    <a-date-picker v-model:value="returnFormData.return_time" />
+                </a-form-item>
+                <a-form-item label="还样数量" name="return_quantity">
+                    <a-input-number v-model:value="returnFormData.return_quantity" min="1" />
+                </a-form-item>
+                <a-form-item label="还样方式" name="return_method">
+                    <a-input v-model:value="returnFormData.return_method" />
+                </a-form-item>
+            </a-form>
+        </a-modal>
     </div>
+    <a-modal title="还样记录" v-model:visible="returnRecordsModalVisible" @cancel="handleCancel" width="60%">
+        <a-table :columns="returnRecordsColumns" :dataSource="returnRecords" :rowKey="record => record.id" />
+    </a-modal>
     <el-dialog v-model="dialogVisible">
         <img w-full :src="dialogImageUrl" alt="Preview Image" />
     </el-dialog>
@@ -229,6 +251,7 @@ const columns = [
         title: '操作',
         key: 'action',
         scopedSlots: { customRender: 'action' },
+        width: '18%'
     },
 ];
 
@@ -311,7 +334,7 @@ const createSample = () => {
         ElMessage.error('请填写样品名称');
         return;
     }
-    
+
     createForm.value.validate().then(async () => {
         createFormData.label_list = selectedLabels.value.map(label => label.label_id);
         await http.post('/test/v1/samples/create_sample', {
@@ -334,9 +357,10 @@ const updateSample = () => {
         if (params.old_sample_id === params.new_sample_id) {
             delete params.new_sample_id
         }
-        await http.post('/test/v1/samples/update_sample', { ...params, 
+        await http.post('/test/v1/samples/update_sample', {
+            ...params,
             logo_url: (logo_url.value || '').replace('/dev-api', ''),
-            pic_list: (picture_urls.value || []).map(x => { return (x || '').replace('/dev-api', '')}),
+            pic_list: (picture_urls.value || []).map(x => { return (x || '').replace('/dev-api', '') }),
             label_list: selectedLabels.value.map(label => label.label_id)
         });
         editModalVisible.value = false;
@@ -418,6 +442,52 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
     dialogImageUrl.value = uploadFile.url!
     dialogVisible.value = true
 }
+
+const returnModalVisible = ref(false);
+const returnForm = ref(null);
+const returnFormData = reactive({
+    sample_id: '',
+    return_time: '',
+    return_quantity: 1,
+    return_method: '',
+});
+
+const returnRules = {
+    return_time: [{ required: true, message: '请选择还样日期', trigger: 'change' }],
+    return_quantity: [{ required: true, message: '请填写还样数量', trigger: 'change' }],
+    return_method: [{ required: true, message: '请填写还样方式', trigger: 'change' }],
+};
+
+const showReturnModal = (record) => {
+    returnFormData.sample_id = record.sample_id;
+    returnFormData.return_time = '';
+    returnFormData.return_quantity = 1;
+    returnFormData.return_method = '';
+    returnModalVisible.value = true;
+};
+
+const handleReturnSample = () => {
+    returnForm.value.validate().then(async () => {
+        await http.post('/test/v1/samples/return_sample', returnFormData);
+        returnModalVisible.value = false;
+        fetchSampleList();
+    });
+};
+
+const returnRecordsModalVisible = ref(false);
+const returnRecords = ref([]);
+
+const returnRecordsColumns = [
+    { title: '还样日期', dataIndex: 'return_time' },
+    { title: '还样数量', dataIndex: 'return_quantity' },
+    { title: '还样方式', dataIndex: 'return_method' },
+];
+
+const showReturnRecordsModal = async (record) => {
+    const data = await http.post('/test/v1/samples/get_return_records', { id: record.sample_id });
+    returnRecords.value = data.data;
+    returnRecordsModalVisible.value = true;
+};
 </script>
 
 <style scoped>

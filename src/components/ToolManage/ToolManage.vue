@@ -15,6 +15,16 @@
                     <a-divider type="vertical" />
                     <a-button type="link" @click="deleteTool(record.tool_id)">删除</a-button>
                 </template>
+                <template v-else-if="column.key === 'download_tar'">
+                    <a-button type="link" @click="downloadFile(record.tool_id, file)" v-for="file in record.tar_list" :key="file">
+                        下载安装包
+                    </a-button>
+                </template>
+                <template v-else-if="column.key === 'download_doc'">
+                    <a-button type="link" @click="downloadFile(record.tool_id, file)" v-for="file in record.doc_list" :key="file">
+                        下载说明书
+                    </a-button>
+                </template>
             </template>
         </a-table>
 
@@ -35,26 +45,18 @@
                         <a-textarea v-model:value="createFormData.tool_description" />
                     </a-form-item>
                     <a-form-item label="上传安装包" name="tar_list">
-                        <el-upload ref="uploadRef" v-model:file-list="createFormData.tar_list" :auto-upload="false"
-                            :on-change="onBeforeUploadTar" accept=".tar" listType="picture-card"
-                            :on-preview="handlePictureCardPreview">
+                        <el-upload ref="uploadRef" :auto-upload="false" :on-change="onBeforeUploadTar" v-model:file-list="tar_list"
+                            accept=".tar">
                             <template #trigger>
-                                <div>
-                                    <plus-outlined />
-                                    <div style="margin-top: 8px">Upload</div>
-                                </div>
+                                <el-button>上传文件</el-button>
                             </template>
                         </el-upload>
                     </a-form-item>
                     <a-form-item label="上传说明书" name="doc_list">
-                        <el-upload ref="uploadRef" v-model:file-list="createFormData.doc_list" :auto-upload="false"
-                            :on-change="onBeforeUploadDoc" accept=".doc,.docx,.pdf" listType="picture-card"
-                            :on-preview="handlePictureCardPreview">
+                        <el-upload ref="uploadRef" :auto-upload="false" :on-change="onBeforeUploadDoc" v-model:file-list="doc_list"
+                            accept=".doc,.docx,.pdf">
                             <template #trigger>
-                                <div>
-                                    <plus-outlined />
-                                    <div style="margin-top: 8px">Upload</div>
-                                </div>
+                                <el-button>上传文件</el-button>
                             </template>
                         </el-upload>
                     </a-form-item>
@@ -79,26 +81,18 @@
                         <a-textarea v-model:value="editFormData.tool_description" />
                     </a-form-item>
                     <a-form-item label="上传安装包" name="tar_list">
-                        <el-upload ref="uploadRef" v-model:file-list="editFormData.tar_list" :auto-upload="false"
-                            :on-change="onBeforeUploadTar" accept=".tar" listType="picture-card"
-                            :on-preview="handlePictureCardPreview">
+                        <el-upload ref="uploadRef" :auto-upload="false" :on-change="onBeforeUploadTar" v-model:file-list="tar_list"
+                            accept=".tar">
                             <template #trigger>
-                                <div>
-                                    <plus-outlined />
-                                    <div style="margin-top: 8px">Upload</div>
-                                </div>
+                                <el-button>上传文件</el-button>
                             </template>
                         </el-upload>
                     </a-form-item>
                     <a-form-item label="上传说明书" name="doc_list">
-                        <el-upload ref="uploadRef" v-model:file-list="editFormData.doc_list" :auto-upload="false"
-                            :on-change="onBeforeUploadDoc" accept=".doc,.docx,.pdf" listType="picture-card"
-                            :on-preview="handlePictureCardPreview">
+                        <el-upload ref="uploadRef" :auto-upload="false" :on-change="onBeforeUploadDoc" v-model:file-list="doc_list"
+                            accept=".doc,.docx,.pdf">
                             <template #trigger>
-                                <div>
-                                    <plus-outlined />
-                                    <div style="margin-top: 8px">Upload</div>
-                                </div>
+                                <el-button>上传文件</el-button>
                             </template>
                         </el-upload>
                     </a-form-item>
@@ -106,9 +100,6 @@
             </a-form>
         </a-modal>
     </div>
-    <el-dialog v-model="dialogVisible">
-        <img w-full :src="dialogImageUrl" alt="Preview Image" />
-    </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -118,14 +109,14 @@ import { ElMessage, ElMessageBox, UploadProps } from 'element-plus';
 import dayjs from 'dayjs';
 const baseURL = import.meta.env.VITE_API_BASE_URL || '';
 console.log(baseURL)
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
 const searchText = ref('');
 const toolList = ref([]);
 const createModalVisible = ref(false);
 const editModalVisible = ref(false);
 const createForm = ref(null);
 const editForm = ref(null);
+const tar_list = ref([]);
+const doc_list = ref([]);
 const createFormData = reactive({
     tool_name: '',
     tool_version: '',
@@ -153,6 +144,16 @@ const columns = [
     { title: '创建时间', dataIndex: 'created_time' },
     { title: '创建者', dataIndex: 'tool_creator' },
     { title: '工具描述', dataIndex: 'tool_description' },
+    {
+        title: '安装包',
+        key: 'download_tar',
+        scopedSlots: { customRender: 'download_tar' },
+    },
+    {
+        title: '说明书',
+        key: 'download_doc',
+        scopedSlots: { customRender: 'download_doc' },
+    },
     {
         title: '操作',
         key: 'action',
@@ -189,6 +190,8 @@ const showCreateModal = () => {
     createFormData.tool_description = '';
     createFormData.tar_list = [];
     createFormData.doc_list = [];
+    tar_list.value = [];
+    doc_list.value = [];
 };
 
 const showEditModal = (record) => {
@@ -197,8 +200,21 @@ const showEditModal = (record) => {
     editFormData.tool_version = record.tool_version;
     editFormData.url_path = record.url_path;
     editFormData.tool_description = record.tool_description;
+    console.log(record)
     editFormData.tar_list = record.tar_list || [];
     editFormData.doc_list = record.doc_list || [];
+    tar_list.value = (record.tar_list || []).map(x => {
+        return {
+            name: x,
+            url: x,
+        };
+    });
+    doc_list.value = (record.doc_list || []).map(x => {
+        return {
+            name: x,
+            url: x,
+        };
+    })
     editModalVisible.value = true;
 };
 
@@ -258,11 +274,15 @@ const rules = {
 const onBeforeUploadTar: UploadProps['onChange'] = async (file) => {
     const formData = new FormData();
     formData.append('info', JSON.stringify({ category: 'tar' }));
-    formData.append('user_file', file.raw);
+    formData.append('file', file.raw);
     try {
         const response = await http.post(`/test/v1/tools/upload_tool_file`, formData);
-        if (response.status === 'ok') {
-            createFormData.tar_list.push(file.name);
+        if (response) {
+            if (createModalVisible.value) {
+                createFormData.tar_list.push(file.name);
+            } else {
+                editFormData.tar_list.push(file.name);
+            }
         }
     } catch (error) {
         console.error("Upload failed: ", error);
@@ -272,21 +292,32 @@ const onBeforeUploadTar: UploadProps['onChange'] = async (file) => {
 const onBeforeUploadDoc: UploadProps['onChange'] = async (file) => {
     const formData = new FormData();
     formData.append('info', JSON.stringify({ category: 'doc' }));
-    formData.append('user_file', file.raw);
+    formData.append('file', file.raw);
     try {
         const response = await http.post(`/test/v1/tools/upload_tool_file`, formData);
-        if (response.status === 'ok') {
-            createFormData.doc_list.push(file.name);
+        if (response) {
+            if (createModalVisible.value) {
+                createFormData.doc_list.push(file.name);
+            } else {
+                editFormData.doc_list.push(file.name);
+            }
         }
     } catch (error) {
         console.error("Upload failed: ", error);
     }
 };
 
-const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
-    dialogImageUrl.value = uploadFile.url!
-    dialogVisible.value = true
-}
+const downloadFile = async (tool_id, filename) => {
+    const path = `${tool_id}/tar/${filename}`;
+    const response = await http.post('/test/v1/common/get_file', { path });
+    const url = window.URL.createObjectURL(new Blob([response]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
 </script>
 
 <style scoped>

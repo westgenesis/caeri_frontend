@@ -90,6 +90,21 @@ export const menuPermissions = [
         title: '标签管理',
         key: '/labelManage',
         children: [],
+    },
+    {
+        title: '项目管理',
+        key: '/projectManage',
+        children: [],
+    },
+    {
+        title: '样品管理',
+        key: '/sampleManage',
+        children: [],
+    },
+    {
+        title: '工具管理',
+        key: '/toolManage',
+        children: []
     }
 ];
 

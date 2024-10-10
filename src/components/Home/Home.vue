@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div>上午好，admin!</div>
+        <div>上午好，{{ currentAccount }}</div>
 
         <div class="flex h-[160px]">
             <a-card style="width: 70%">
@@ -79,6 +79,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { http } from '../../http'
+import { useProjectStore } from '../../stores/project';
 
 const route = useRoute();
 const router = useRouter();
@@ -86,7 +87,9 @@ const currentAccount = ref(localStorage.getItem('account'));
 const managedProjects = ref([]);
 const participatedProjects = ref([]);
 const table_height = window.innerHeight * 0.55;
-
+watch(route, () => {
+    currentAccount.value = localStorage.getItem('account');
+});
 const columns = [
     { title: '项目ID', dataIndex: 'project_id' },
     { title: '项目名称', dataIndex: 'project_name', key: 'project_name'},
@@ -98,10 +101,7 @@ const columns = [
     { title: '创建时间', dataIndex: 'created_time' },
     { title: '创建者', dataIndex: 'creator' },
     { title: '项目描述', dataIndex: 'comment' },
-    {
-        title: '操作',
-        key: 'action'
-    },
+
 ];
 
 const recordMap = {
@@ -209,6 +209,13 @@ const initCharts = () => {
 watch(route, () => {
     currentAccount.value = localStorage.getItem('account');
 });
+const projectStore = useProjectStore();
+const goToProjectDetail = (record) => {
+    projectStore.setProjectDetail(record);
+    router.push({
+        path: '/projectDetail'
+    });
+};
 </script>
 
 <style scoped lang="less">
